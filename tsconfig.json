@@ -4,12 +4,12 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@routes/*": ["src/routes/*"],
-      "@loaders/*": ["src/loaders/*"],
-      "@repos/*": ["src/repos/*"],
-      "@services/*": ["src/services/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@src/*": ["src/*"]
+      "@/routes/*": ["src/routes/*"],
+      "@/loaders/*": ["src/loaders/*"],
+      "@/repos/*": ["src/repos/*"],
+      "@/services/*": ["src/services/*"],
+      "@/controllers/*": ["src/controllers/*"],
+      "@/src/*": ["src/*"]
     }
   },
   "include": ["src"],

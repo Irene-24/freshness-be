@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  freshness-api-dev:  
+    env_file:
+      - .env.development
+    # environment:
+    #   - NODE_ENV=development
+    #   - PORT=4000 
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    container_name: api_dev_c
+    expose:
+      - 4000
+    ports:
+      - 3000:4000 #port-in-url:docker-port
+    command: pnpm dev
+    depends_on:
+      - freshness-dev-db
+      
+  freshness-dev-db:
+    image: postgres:15-alpine
+    env_file:
+      - .env.development
+    # environment:
+    #   POSTGRES_USER: user
+    #   POSTGRES_PASSWORD: password
+    volumes:
+       - ./data:/var/lib/postgresql/data
+    ports:
+    - "5442:5432"
+    networks:
+    - irene_network
+
+  freshness-dev-pgadmin:
+    image: dpage/pgadmin4    
+    env_file:
+      - .env.development
+    # environment:
+    #   PGADMIN_DEFAULT_EMAIL: irene@email.com
+    #   PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+    - "9090:80"
+    networks:
+    - irene_network
+    depends_on:
+      - db
+    
+networks:
+  irene_network:
+    driver: bridge

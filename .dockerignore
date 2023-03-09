@@ -1,0 +1,54 @@
+# local env files
+.env
+.env*.local
+.env.production
+.env.development
+
+
+# misc
+.DS_Store
+*.pem
+
+
+# typescript
+*.tsbuildinfo
+
+data
+*.md
+
+.eslintrc
+.eslintignore
+.prettierrc
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+
+# production
+/build
+/dist
+
+Dockerfile
+Dockerfile*
+docker-compose*.yml
+docker*.yml
+
+.git
+.gitignore
+.config
+
+.npm
+.vscode
+node_modules
