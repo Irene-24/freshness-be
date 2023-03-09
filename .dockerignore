@@ -41,7 +41,9 @@ yarn-error.log*
 /dist
 
 Dockerfile
-Dockerfile*
+Dockerfile.dev
+Dockerfile.prod
+
 docker-compose*.yml
 docker*.yml
 
@@ -52,3 +54,5 @@ docker*.yml
 .npm
 .vscode
 node_modules
+
+sql
