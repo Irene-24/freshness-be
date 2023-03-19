@@ -3,7 +3,7 @@ import UserRepo from "@/repo/User.repo";
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import { ROLES } from "@/utils/commonType";
 import bcrypt from "bcrypt";
-import { ApiError, AppError } from "@/utils/APIError";
+import { AppError } from "@/utils/APIError";
 
 const saltRounds = 10;
 
