@@ -12,7 +12,7 @@ import { z } from "zod";
 const pwdRegex =
   /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]:";'<>,.?\/~]).{6,26}$/;
 
-const EmailPwdSchema = z.object({
+const UserWithEmailPwdSchema = z.object({
   email: z
     .string({
       required_error: "Email is required",
@@ -32,4 +32,6 @@ const EmailPwdSchema = z.object({
   }),
 });
 
-export { EmailPwdSchema };
+const EmailPwdSchema = UserWithEmailPwdSchema.omit({ role: true });
+
+export { UserWithEmailPwdSchema, EmailPwdSchema };

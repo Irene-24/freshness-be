@@ -42,6 +42,6 @@ export class AppError extends Error {
 
 export class NotFoundError extends ApiError {
   constructor(path: string) {
-    super(404, `The requested path ${path} not found!`, true);
+    super(404, `The requested path ${path} was not found!`, true);
   }
 }

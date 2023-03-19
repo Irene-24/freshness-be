@@ -1,6 +1,6 @@
 import { UserEmailPwd } from "@/dto/User.dto";
 import UserRepo from "@/repo/User.repo";
-import { EmailPwdSchema } from "@/validators/schemas/User.schema";
+import { UserWithEmailPwdSchema } from "@/validators/schemas/User.schema";
 import { ROLES } from "@/utils/commonType";
 import bcrypt from "bcrypt";
 import { AppError } from "@/utils/APIError";
@@ -10,7 +10,7 @@ const saltRounds = 10;
 class UserService {
   static async registerWithEmailPwd(body: UserEmailPwd) {
     try {
-      await EmailPwdSchema.parseAsync(body);
+      await UserWithEmailPwdSchema.parseAsync(body);
 
       const hashPwd = this.hashPwd(body.password);
       const newUser = await UserRepo.create({ ...body, password: hashPwd });

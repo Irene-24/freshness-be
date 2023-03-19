@@ -1,17 +1,21 @@
+import { AppError } from "@/utils/APIError";
 import { Request, Response, NextFunction } from "express";
 import { AnyZodObject } from "zod";
-import { badRequestErrorHandler } from "@/utils/errorHandler";
 
 const validateReq =
   (schema: AnyZodObject, key: "body" | "query" | "params") =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync({
-        [key]: req[key],
-      });
+      await schema.parseAsync(req[key]);
       return next();
-    } catch (error) {
-      return badRequestErrorHandler({ statusCode: 400, error, res });
+    } catch (error: any) {
+      next(
+        new AppError({
+          body: error,
+          statusCode: 400,
+          message: `Invalid request ${key}`,
+        })
+      );
     }
   };
 
