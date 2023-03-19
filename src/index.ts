@@ -1,6 +1,6 @@
+import loaders from "@/loaders";
 import createApp from "./app";
 import config from "./config";
-import loaders from "./loaders";
 
 const app = createApp();
 
@@ -9,9 +9,9 @@ loaders({ expressApp: app });
 app
   .listen(config.port, () => {
     console.info(`
-      ################################################
-      🛡️  Server listening on port: ${config.port} 🛡️
-      ################################################
+      #######################################################################
+          🛡️  Server is available at: http://localhost:${config.port} 🛡️
+      #######################################################################
     `);
   })
   .on("error", (err) => {

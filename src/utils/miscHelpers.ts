@@ -20,4 +20,31 @@ const omit = <T extends Record<string, any>, K extends keyof T>(
   return newObj;
 };
 
-export { omit };
+const pick = <T extends Record<string, any>, K extends keyof T>(
+  object: T,
+  allowedKeys: K | K[]
+) => {
+  const keysArray = Array.isArray(allowedKeys) ? allowedKeys : [allowedKeys];
+
+  const result = {} as Pick<T, K>;
+
+  keysArray.forEach((key) => {
+    result[key] = object[key];
+  }, result);
+
+  return result;
+};
+
+const snakeToCamel = (str: string) => {
+  if (!str.trim()) {
+    throw new Error("Empty string cannot be converted to camel Case");
+  }
+
+  return str
+    .toLowerCase()
+    .replace(/([-_][a-z0-9])/g, (group: string) =>
+      group.toUpperCase().replace("-", "").replace("_", "")
+    );
+};
+
+export { omit, snakeToCamel, pick };

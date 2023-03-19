@@ -7,7 +7,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 //else it will make it dev
 console.log({ env: process.env.NODE_ENV });
 
-const path =
+let path =
   process.env.NODE_ENV === "production"
     ? __dirname + `/../.env`
     : __dirname + `/../.env.${process.env.NODE_ENV}`;
@@ -15,6 +15,10 @@ const path =
 const envFound = dotenv.config({
   path,
 }); // change according to your need
+
+if (process.env.NODE_ENV === "test") {
+  path = __dirname + `/../.env.test`;
+}
 
 if (envFound.error) {
   throw new Error("⚠️  Couldn't find any .env file  ⚠️");

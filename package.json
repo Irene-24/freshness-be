@@ -2,11 +2,11 @@
   "name": "freshness-be",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "start-prod": "cross-env NODE_ENV=production node  dist/index.js",
-    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
+    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --poll -r tsconfig-paths/register src/index.ts",
     "start": "pnpm build && pnpm start-prod",
     "build": "tsc && resolve-tspaths",
     "lint": "eslint src/**/*.ts",
@@ -20,6 +20,8 @@
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
+    "@types/babel__generator": "^7.6.4",
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.4.0",
@@ -36,18 +38,20 @@
     "prettier": "^2.8.4",
     "resolve-tspaths": "^0.8.8",
     "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.4"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "pg": "^8.9.0",
     "pg-format": "^1.0.4",
-    "serialize-error": "^11.0.0",
-    "zod": "^3.20.6"
+    "serialize-error": "8.1.0",
+    "zod": "^3.21.4"
   },
   "husky": {
     "hooks": {
