@@ -39,6 +39,7 @@ if (envFound.error) {
 export default {
   env: process.env.NODE_ENV,
   isDev: process.env.NODE_ENV === "development",
+  isProd: process.env.NODE_ENV === "production",
   port: parseInt(process.env.PORT as string, 10),
   pageSize: parseInt(process.env.LIMIT as string, 10),
   dbConfig: {

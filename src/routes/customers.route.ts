@@ -5,16 +5,17 @@ import {
   // validateReqQuery,
 } from "@/validators/validate";
 import { NextFunction, Request, Response, Router } from "express";
-const route = Router();
 
 const customerRoutes = (app: Router) => {
+  const route = Router();
+
   app.use("/customers", route);
 
   route.post(
     "/",
     validateReqBody(EmailPwdSchema),
     (req: Request, res: Response, next: NextFunction) => {
-      res.json({
+      res.status(201).json({
         message: "Created customer",
       });
     }

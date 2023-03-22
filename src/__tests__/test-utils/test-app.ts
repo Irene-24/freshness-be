@@ -1,5 +1,6 @@
 import createApp from "@/src/app";
-import { Router } from "express";
+import cors from "cors";
+import express, { NextFunction, Request, Response, Router } from "express";
 
 type AppRoute = (app: Router) => void;
 
@@ -7,6 +8,14 @@ interface Args {
   routers: AppRoute | AppRoute[];
   routePrefix?: string;
 }
+
+const routes = (routers: AppRoute[] = []) => {
+  const app = Router();
+
+  routers.forEach((route) => route(app));
+
+  return app;
+};
 
 const buildApp = ({ routers = [], routePrefix = "/api/v1" }: Args) => {
   const routersArray = Array.isArray(routers) ? routers : [routers];
@@ -16,13 +25,22 @@ const buildApp = ({ routers = [], routePrefix = "/api/v1" }: Args) => {
   }
 
   const expressApp = createApp();
-  const appRouter = Router();
 
-  routersArray.forEach((router) => {
-    router(appRouter);
-  });
+  expressApp.use(cors());
 
-  expressApp.use(routePrefix, appRouter);
+  expressApp.use(express.json());
+  expressApp.use(express.urlencoded({ extended: true }));
+  expressApp.use(routePrefix, routes(routersArray));
+
+  //   catch all errors just in case
+  expressApp.use(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (error: any, req: Request, res: Response, next: NextFunction) => {
+      res.status(error?.statusCode || 500).json({
+        error,
+      });
+    }
+  );
 
   return expressApp;
 };

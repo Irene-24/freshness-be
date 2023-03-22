@@ -29,13 +29,12 @@ export default ({ app }: { app: express.Application }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.statusCode || 500);
     const error = omit(
       serializeError(err),
       err.omitStack ? ["stack", "omitStack"] : "omitStack"
     );
 
-    res.json({
+    res.status(err?.statusCode || 500).json({
       error,
     });
   });
