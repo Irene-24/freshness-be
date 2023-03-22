@@ -1,5 +1,4 @@
 import createApp from "@/src/app";
-import cors from "cors";
 import express, { NextFunction, Request, Response, Router } from "express";
 
 type AppRoute = (app: Router) => void;
@@ -26,13 +25,13 @@ const buildApp = ({ routers = [], routePrefix = "/api/v1" }: Args) => {
 
   const expressApp = createApp();
 
-  expressApp.use(cors());
-
   expressApp.use(express.json());
   expressApp.use(express.urlencoded({ extended: true }));
+
+  //route prefix is just so that it looks just like the actual api route
   expressApp.use(routePrefix, routes(routersArray));
 
-  //   catch all errors just in case
+  //catch all errors just in case
   expressApp.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (error: any, req: Request, res: Response, next: NextFunction) => {
