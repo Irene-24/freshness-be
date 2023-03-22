@@ -16,6 +16,7 @@
       "@/loaders": ["src/loaders"],
 
       "@/dto/*": ["src/dto/*"],
+      "@/test-utils/*": ["src/__tests__/test-utils/*"],
 
       "@/repo/*": ["src/repo/*"],
       "@/services/*": ["src/services/*"],

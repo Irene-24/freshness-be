@@ -1,16 +1,13 @@
-import {
-  UserWithEmailPwdSchema,
-  EmailPwdSchema,
-} from "@/validators/schemas/User.schema";
+import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import {
   validateReqBody,
-  validateReqParams,
-  validateReqQuery,
+  // validateReqParams,
+  // validateReqQuery,
 } from "@/validators/validate";
 import { NextFunction, Request, Response, Router } from "express";
 const route = Router();
 
-export default (app: Router) => {
+const customerRoutes = (app: Router) => {
   app.use("/customers", route);
 
   route.post(
@@ -29,3 +26,5 @@ export default (app: Router) => {
     });
   });
 };
+
+export default customerRoutes;

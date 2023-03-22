@@ -12,5 +12,8 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(
     compilerOptions.paths /*, { prefix: '<rootDir>/' } */
   ),
-  modulePathIgnorePatterns: ["<rootDir>/src/__tests__/__mocks__/"],
+  modulePathIgnorePatterns: [
+    "<rootDir>/src/__tests__/__mocks__/",
+    "<rootDir>/src/__tests__/test-utils/",
+  ],
 };

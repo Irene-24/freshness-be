@@ -13,7 +13,7 @@
     "format": "eslint src/**/*.ts --fix",
     "pretty": "prettier --write \"src/**/*.ts\"",
     "migrate": "node-pg-migrate",
-    "test": "jest --no-cache"
+    "test": "jest  --no-cache"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,7 @@
     "@types/node": "^18.13.0",
     "@types/pg": "^8.6.6",
     "@types/pg-format": "^1.0.2",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "cross-env": "^7.0.3",

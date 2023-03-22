@@ -5,7 +5,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 //set node_env close to node index.js not in build step
 //else it will make it dev
-console.log({ env: process.env.NODE_ENV });
+//console.log({ env: process.env.NODE_ENV });
 
 const getEnvPath = () => {
   let path = __dirname + `/../.env`;
@@ -44,9 +44,9 @@ export default {
   dbConfig: {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT as string, 10),
-    database: process.env.DB_DATABASE,
-    user: process.env.DB_USER,
-    password: process.env.DB_PWD,
+    database: process.env.DB_NAME,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
   },
   jwtConfig: {},
   emailConfig: {},

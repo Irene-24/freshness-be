@@ -10,6 +10,7 @@ specifiers:
   '@types/node': ^18.13.0
   '@types/pg': ^8.6.6
   '@types/pg-format': ^1.0.2
+  '@types/supertest': ^2.0.12
   '@typescript-eslint/eslint-plugin': ^5.51.0
   '@typescript-eslint/parser': ^5.51.0
   bcrypt: ^5.1.0
@@ -53,6 +54,7 @@ devDependencies:
   '@types/node': 18.15.3
   '@types/pg': 8.6.6
   '@types/pg-format': 1.0.2
+  '@types/supertest': 2.0.12
   '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri
   '@typescript-eslint/parser': 5.55.0_vgl77cfdswitgr47lm5swmv43m
   cross-env: 7.0.3
@@ -868,6 +870,10 @@ packages:
       '@types/node': 18.15.3
     dev: true
 
+  /@types/cookiejar/2.1.2:
+    resolution: {integrity: sha512-t73xJJrvdTjXrn4jLS9VSGRbz0nUY3cl2DMGDU48lKl+HR9dbbjW2A9r3g40VA++mQpy6uuHg33gy7du2BKpog==}
+    dev: true
+
   /@types/cors/2.8.13:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
@@ -977,6 +983,19 @@ packages:
 
   /@types/strip-json-comments/0.0.30:
     resolution: {integrity: sha512-7NQmHra/JILCd1QqpSzl8+mJRc8ZHz3uDm8YV1Ks9IhK0epEiTw8aIErbvH9PI+6XbqhyIQy3462nEsn7UVzjQ==}
+    dev: true
+
+  /@types/superagent/4.1.16:
+    resolution: {integrity: sha512-tLfnlJf6A5mB6ddqF159GqcDizfzbMUB1/DeT59/wBNqzRTNNKsaw79A/1TZ84X+f/EwWH8FeuSkjlCLyqS/zQ==}
+    dependencies:
+      '@types/cookiejar': 2.1.2
+      '@types/node': 18.15.3
+    dev: true
+
+  /@types/supertest/2.0.12:
+    resolution: {integrity: sha512-X3HPWTwXRerBZS7Mo1k6vMVR1Z6zmJcDVn5O/31whe0tnjE4te6ZJSJGq1RiqHPjzPdMTfjCFogDJmwng9xHaQ==}
+    dependencies:
+      '@types/superagent': 4.1.16
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -2091,7 +2110,7 @@ packages:
       dezalgo: 1.0.4
       hexoid: 1.0.0
       once: 1.4.0
-      qs: 6.11.1
+      qs: 6.11.0
     dev: true
 
   /forwarded/0.2.0:
@@ -3416,14 +3435,6 @@ packages:
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.4
-    dev: false
-
-  /qs/6.11.1:
-    resolution: {integrity: sha512-0wsrzgTz/kAVIeuxSjnpGC56rzYtr6JT/2BwEvMaPhFIoYa1aGO8LbzuU1R0uUYQkLpWBTOj0l/CLAJB64J6nQ==}
-    engines: {node: '>=0.6'}
-    dependencies:
-      side-channel: 1.0.4
-    dev: true
 
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -3738,7 +3749,7 @@ packages:
       formidable: 2.1.2
       methods: 1.1.2
       mime: 2.6.0
-      qs: 6.11.1
+      qs: 6.11.0
       semver: 7.3.8
     transitivePeerDependencies:
       - supports-color
