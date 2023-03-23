@@ -3,7 +3,8 @@ import { AdminInfo, GithHubUser, UserEmailPwd, UserInfo } from "@/dto/User.dto";
 import format from "pg-format";
 import { toCamelCase, toCamelCaseRows } from "@/utils/casing";
 import { pick } from "@/utils/miscHelpers";
-import { ROLES } from "@/utils/commonType";
+import { AppError } from "@/utils/APIError";
+import { genericAppError } from "@/utils/errorHandler";
 
 type Key = keyof UserInfo;
 
@@ -27,7 +28,7 @@ class UserRepository extends BaseRespoitory {
       const result = await this.query(
         format(
           "INSERT INTO users (email, password, role) VALUES %L RETURNING *;",
-          [email, password, role]
+          [[email, password, role]]
         )
       );
 
@@ -37,8 +38,11 @@ class UserRepository extends BaseRespoitory {
       );
 
       return newUser;
-    } catch (error) {
-      throw new Error("Unable to create new user", { cause: error });
+    } catch (error: any) {
+      return genericAppError({
+        error,
+        defaultMsg: error.message || `Unable to create new ${role || "user"}`,
+      });
     }
   }
 
@@ -47,7 +51,7 @@ class UserRepository extends BaseRespoitory {
       const result = await this.query(
         format(
           "INSERT INTO users (email, avatar_url, id, user_name, role) VALUES %L RETURNING *;",
-          [email, avatar_url, id, login, role]
+          [[email, avatar_url, id, login, role]]
         )
       );
 
@@ -57,8 +61,11 @@ class UserRepository extends BaseRespoitory {
       );
 
       return newUser;
-    } catch (error) {
-      throw new Error("Unable to create new user", { cause: error });
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: `Unable to create new ${role || "user"} using github`,
+      });
     }
   }
 
@@ -80,6 +87,26 @@ class UserRepository extends BaseRespoitory {
 
   findById(id: string) {
     return 5;
+  }
+
+  async findByEmail(email: string) {
+    try {
+      const result = await this.query(
+        format("SELECT * FROM users WHERE email=%L LIMIT 1;", [email])
+      );
+
+      const user = pick(
+        toCamelCase<UserInfo>(result?.rows[0] ?? {}),
+        defaultKeys
+      );
+
+      return user;
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: `Unable find user with email ${email}`,
+      });
+    }
   }
 }
 

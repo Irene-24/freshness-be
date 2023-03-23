@@ -9,7 +9,7 @@ exports.up = async (pgm) => {
         email VARCHAR(50) NOT NULL UNIQUE,
         phone_number VARCHAR(20),
         avatar_url VARCHAR,
-        user_name VARCHAR(50) NOT NULL,
+        user_name VARCHAR(50) ,
 
         password VARCHAR(255),
         sso_provider VARCHAR(50),

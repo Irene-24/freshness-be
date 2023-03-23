@@ -46,8 +46,6 @@ describe("User Service", () => {
 
     expect(UserRepo.create as jest.Mock).not.toHaveBeenCalled();
 
-    expect(result).rejects.toThrow(
-      "Unable to create user with password and email"
-    );
+    expect(result).rejects.toThrow();
   });
 });

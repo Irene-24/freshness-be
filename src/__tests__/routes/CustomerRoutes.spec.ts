@@ -3,6 +3,7 @@ import request from "supertest";
 import buildApp from "@/test-utils/test-app";
 import Context from "@/test-utils/context";
 import customerRoutes from "@/routes/customers.route";
+import { ROLES } from "@/utils/commonType";
 
 let context: Context;
 let app: request.SuperTest<request.Test>;
@@ -30,6 +31,7 @@ describe("Customer routes", function () {
       .expect((res) => {
         expect(res.body.message).toEqual("Created customer");
         expect(res.body.data.id).toBeDefined();
+        expect(res.body.data.role).toEqual(ROLES.CUSTOMER);
         expect(res.statusCode).toEqual(201);
       })
       .end(done);

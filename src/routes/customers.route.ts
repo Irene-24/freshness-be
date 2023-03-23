@@ -1,3 +1,7 @@
+import CustomerController from "@/controllers/customers.controllers";
+import UserService from "@/services/User.service";
+import { AppError } from "@/utils/APIError";
+import { checkEmailNotExists } from "@/validators/checkUserEmail";
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import {
   validateReqBody,
@@ -12,13 +16,10 @@ const customerRoutes = (app: Router) => {
   app.use("/customers", route);
 
   route.post(
-    "/",
+    "/register-with-email-and-password",
     validateReqBody(EmailPwdSchema),
-    (req: Request, res: Response, next: NextFunction) => {
-      res.status(201).json({
-        message: "Created customer",
-      });
-    }
+    checkEmailNotExists,
+    CustomerController.createWithEmailAndPassword
   );
 
   route.get("/", (req: Request, res: Response, next: NextFunction) => {

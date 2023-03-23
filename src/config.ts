@@ -45,7 +45,7 @@ export default {
   dbConfig: {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT as string, 10),
-    database: process.env.DB_NAME,
+    database: process.env.POSTGRES_DB,
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
   },
