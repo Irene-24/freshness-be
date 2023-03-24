@@ -1,6 +1,4 @@
 import CustomerController from "@/controllers/customers.controllers";
-import UserService from "@/services/User.service";
-import { AppError } from "@/utils/APIError";
 import { checkEmailNotExists } from "@/validators/checkUserEmail";
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import {
@@ -23,9 +21,7 @@ const customerRoutes = (app: Router) => {
   );
 
   route.get("/", (req: Request, res: Response, next: NextFunction) => {
-    res.json({
-      data: [],
-    });
+    res.json({});
   });
 };
 

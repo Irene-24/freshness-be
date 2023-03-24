@@ -1,5 +1,6 @@
 import createApp from "@/src/app";
 import express, { NextFunction, Request, Response, Router } from "express";
+import { serializeError } from "serialize-error";
 
 type AppRoute = (app: Router) => void;
 
@@ -35,8 +36,9 @@ const buildApp = ({ routers = [], routePrefix = "/api/v1" }: Args) => {
   expressApp.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (error: any, req: Request, res: Response, next: NextFunction) => {
-      res.status(error?.statusCode || 500).json({
-        error,
+      //serialize error to access full text err
+      return res.status(error?.statusCode || 500).json({
+        error: serializeError(error),
       });
     }
   );

@@ -49,6 +49,9 @@ export default {
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
   },
-  jwtConfig: {},
+  jwtConfig: {
+    jwtSecret: process.env.JWT_SECRET,
+    refreshSecret: process.env.SECRET_KEY,
+  },
   emailConfig: {},
 };

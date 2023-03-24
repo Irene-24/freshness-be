@@ -4,6 +4,7 @@ import buildApp from "@/test-utils/test-app";
 import Context from "@/test-utils/context";
 import customerRoutes from "@/routes/customers.route";
 import { ROLES } from "@/utils/commonType";
+import { serializeError } from "serialize-error";
 
 let context: Context;
 let app: request.SuperTest<request.Test>;
@@ -21,10 +22,12 @@ afterAll(() => {
   context.close();
 });
 
+const url = "/api/v1/customers";
+
 describe("Customer routes", function () {
   it("registers a user with a unique email and password", (done) => {
     app
-      .post("/api/v1/customers")
+      .post(`${url}/register-with-email-and-password`)
       .send({ email: "test@email.com", password: "Test123$" })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
@@ -39,20 +42,18 @@ describe("Customer routes", function () {
 
   it("fails to register a user with an existing email", (done) => {
     app
-      .post("/api/v1/customers")
+      .post(`${url}/register-with-email-and-password`)
       .send({ email: "test@email.com", password: "Test123$" })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .end(() => {
         app
-          .post("/api/v1/customers")
+          .post(`${url}/register-with-email-and-password`)
           .send({ email: "test@email.com", password: "Test123$" })
           .set("Content-Type", "application/json")
           .set("Accept", "application/json")
           .expect((res) => {
-            expect(res.body.message).toContain(
-              "Customer exists with this email"
-            );
+            expect(res.text).toMatch(/email already exists/gi);
             expect(res.statusCode).toEqual(400);
           })
           .end(done);
@@ -61,14 +62,50 @@ describe("Customer routes", function () {
 
   it("fails to register a user with an invalid password", (done) => {
     app
-      .post("/api/v1/customers")
-      .send({ email: "test@email.com", password: "Test123$" })
+      .post(`${url}/register-with-email-and-password`)
+      .send({ email: "test@email.com", password: "Test123" })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .expect((res) => {
-        expect(res.body.message).toContain("Invalid request");
+        expect(res.text).toMatch(/Invalid request/gi);
+
         expect(res.statusCode).toEqual(400);
-        expect(res.body.error).toBeDefined();
+      })
+      .end(done);
+  });
+
+  //get all customers => only by admin
+
+  it("fails to list customers if user role is not ADMIN", (done) => {
+    app
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect((res) => {
+        expect(res.statusCode).toEqual(403);
+      })
+      .end(done);
+  });
+
+  it("fails to list customers if user role is not signed in", (done) => {
+    app
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect((res) => {
+        expect(res.statusCode).toEqual(401);
+      })
+      .end(done);
+  });
+
+  it("returns a list of customers", (done) => {
+    app
+      .get(url)
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect((res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty("data");
       })
       .end(done);
   });

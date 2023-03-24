@@ -1,0 +1,18 @@
+import { Request, Response, NextFunction } from "express";
+
+const checkLoggedIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  //check that jwt is valid
+  //rturn 401 if invalid
+
+  //get userinfo from jwt
+  //find user by id
+
+  //no user, return 404
+  //add req.user to req
+
+  return next();
+};
