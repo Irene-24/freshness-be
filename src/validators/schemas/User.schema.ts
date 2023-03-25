@@ -23,7 +23,7 @@ const UserWithEmailPwdSchema = z.object({
     .trim()
     .regex(
       pwdRegex,
-      `password should satisfy: at least one uppercase letter,at least one lowercase letter,at least one number,at least one special character,at least 6 characters long,at most 26 characters long            
+      `Password should satisfy: at least one uppercase letter,at least one lowercase letter,at least one number,at least one special character,at least 6 characters long,at most 26 characters long            
     `
     ),
   role: z.enum([ROLES.ADMIN, ROLES.MERCHANT, ROLES.CUSTOMER], {

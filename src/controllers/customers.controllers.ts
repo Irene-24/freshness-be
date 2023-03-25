@@ -1,4 +1,3 @@
-import AuthService from "@/services/Auth.service";
 import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { NextFunction, Request, Response } from "express";
@@ -10,10 +9,9 @@ class CustomerController {
     next: NextFunction
   ) {
     try {
-      const hashPwd = await AuthService.hashPwd(req.body.password);
       const user = await UserService.customerCreateWithEmailPwd({
         email: req.body.email,
-        password: hashPwd,
+        password: req.body.password,
       });
 
       return res.status(201).json({

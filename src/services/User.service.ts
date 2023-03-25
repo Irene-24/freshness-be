@@ -4,13 +4,20 @@ import { UserWithEmailPwdSchema } from "@/validators/schemas/User.schema";
 import { ROLES } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
+import { hashPwd } from "@/utils/password";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
     try {
       await UserWithEmailPwdSchema.parseAsync(body);
+      const password = await hashPwd(body.password);
 
-      const newUser = await UserRepo.create(body);
+      const updatedBody = {
+        ...body,
+        password,
+      };
+
+      const newUser = await UserRepo.create(updatedBody);
 
       return newUser;
     } catch (error: any) {
