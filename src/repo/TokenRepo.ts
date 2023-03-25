@@ -1,8 +1,7 @@
 import { toCamelCase } from "@/utils/casing";
 import format from "pg-format";
 import pool from "@/src/db";
-import { genericAppError } from "@/utils/errorHandler";
-
+import { AppError } from "@/utils/APIError";
 interface UserToken {
   userId: string;
   refreshToken: string;
@@ -19,18 +18,18 @@ class TokenRepository {
       const result = await this.query(
         format(
           `UPDATE user_tokens
-            SET refreshToken = $1
-            WHERE user_id = $2 RETURNING *;
+            SET refreshToken = %1$L
+            WHERE user_id =  %2$L RETURNING *;
         `,
-          [token, id]
+          token,
+          id
         )
       );
-
       return toCamelCase<UserToken>(result?.rows[0]);
     } catch (error: any) {
-      return genericAppError({
-        error,
-        defaultMsg: error.message || `Unable to update refreshToken info`,
+      throw new AppError({
+        body: error,
+        message: error.message || `Unable to generate token info`,
       });
     }
   }
@@ -40,18 +39,19 @@ class TokenRepository {
       const result = await this.query(
         format(
           `UPDATE user_tokens
-            SET verifyToken = $1
-            WHERE user_id = $2 RETURNING *;
+            SET verifyToken = %1$L
+            WHERE user_id = %2$L RETURNING *;
         `,
-          [token, id]
+          token,
+          id
         )
       );
 
       return toCamelCase<UserToken>(result?.rows[0]);
     } catch (error: any) {
-      return genericAppError({
-        error,
-        defaultMsg: error.message || `Unable to update verifyToken info`,
+      throw new AppError({
+        body: error,
+        message: error.message || `Unable to update verifyToken info`,
       });
     }
   }
@@ -69,9 +69,9 @@ class TokenRepository {
 
       return toCamelCase<UserToken>(result?.rows[0]);
     } catch (error: any) {
-      return genericAppError({
-        error,
-        defaultMsg: error.message || `Unable to retrieve token info`,
+      throw new AppError({
+        body: error,
+        message: error.message || `Unable to retrieve token info`,
       });
     }
   }

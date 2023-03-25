@@ -90,9 +90,9 @@ class TokenService {
 
       return refreshToken;
     } catch (error: any) {
-      return genericAppError({
-        error,
-        defaultMsg: error?.message || "Could not generate refresh token",
+      throw new AppError({
+        message: error?.message || "Could not generate refresh token",
+        body: error?.body ?? error,
       });
     }
   }
@@ -119,9 +119,10 @@ class TokenService {
         throw new Error("Invalid refresh token");
       }
     } catch (error: any) {
-      return genericAppError({
-        error,
-        defaultMsg: error?.message || "Invalid refresh token",
+      throw new AppError({
+        message: error?.message || "Invalid refresh token",
+        body: error?.body ?? error,
+        statusCode: 401,
       });
     }
   }

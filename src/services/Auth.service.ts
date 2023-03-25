@@ -15,7 +15,7 @@ class AuthService {
         return { isCorrectPwd, user: user as UserInfo };
       }
 
-      throw new Error(`Invalid role`);
+      throw new Error("Unable to find user");
     } catch (error: any) {
       throw new AppError({
         body: error.body ?? error,
@@ -25,6 +25,12 @@ class AuthService {
       });
     }
   }
+
+  static async customerPasswordLogin(email: string, password: string) {
+    return this.loginWithPassword(email, password, ROLES.CUSTOMER);
+  }
+
+  //customerlogin via github
 }
 
 export default AuthService;

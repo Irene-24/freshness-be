@@ -12,7 +12,7 @@ type AKey = keyof AdminInfo;
 
 type UserType = AdminInfo | UserInfo;
 
-type ExtendedInfo = UserType & Record<string, any>;
+export type ExtendedInfo = UserType & Record<string, any>;
 
 const defaultKeys: Key[] = [
   "id",
