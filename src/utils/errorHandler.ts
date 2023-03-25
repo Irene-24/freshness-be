@@ -17,20 +17,23 @@ const invalidRequestErrorHandler = (err: string) => {
 };
 
 interface IAppErr {
-  defaultMsg: string;
+  defaultMsg?: string;
   error: Error & AppError;
+  statusCode?: number;
 }
 
-const genericAppError = ({ error, defaultMsg }: IAppErr) => {
+const genericAppError = ({ error, defaultMsg, statusCode }: IAppErr) => {
   if (error.body) {
     throw new AppError({
       body: error.body,
-      message: error.message || defaultMsg,
+      message: error.message || defaultMsg || "Error performing request",
+      statusCode,
     });
   }
   throw new AppError({
     body: error,
-    message: defaultMsg,
+    message: defaultMsg || "Error performing request",
+    statusCode,
   });
 };
 

@@ -2,6 +2,8 @@ import { sign, verify, JwtPayload } from "jsonwebtoken";
 import CryptoJS from "crypto-js";
 import config from "@/src/config";
 import { AppError } from "@/utils/APIError";
+import TokenRepo from "@/repo/TokenRepo";
+import { genericAppError } from "@/utils/errorHandler";
 
 const { jwtConfig } = config;
 
@@ -32,6 +34,12 @@ const decode = (value: string) => {
 
 interface UserIDJwtPayload extends JwtPayload {
   id: string;
+}
+
+interface RefreshPayload {
+  id: string;
+  createdAt: string;
+  duration: number;
 }
 
 const week = 7 * 24 * 60 * 60 * 1000;
@@ -69,21 +77,53 @@ class TokenService {
   }
 
   static async generateRefreshToken(id: string) {
-    const refreshToken = encode(JSON.stringify({ id, duration: week }));
+    try {
+      const refreshToken = encode(
+        JSON.stringify({
+          id,
+          duration: week,
+          createdAt: new Date().toISOString(),
+        })
+      );
 
-    //save token to db
+      await TokenRepo.addOrUpdateRefreshToken(id, refreshToken);
 
-    return refreshToken;
+      return refreshToken;
+    } catch (error: any) {
+      return genericAppError({
+        error,
+        defaultMsg: error?.message || "Could not generate refresh token",
+      });
+    }
   }
 
   static async verifyRefreshToken(refreshToken: string) {
-    //get user id and token duration
-    //verify userid via usertoken db and duration is still valid
+    try {
+      const tokenPayload: RefreshPayload = JSON.parse(decode(refreshToken));
 
-    //if fail throw error
+      if (!tokenPayload.id) {
+        throw new Error("Invalid refresh token");
+      }
 
-    //return true
-    return;
+      const now = new Date().getMilliseconds();
+      const diff = now - new Date(tokenPayload.createdAt).getMilliseconds();
+
+      if (diff < week) {
+        const fullInfo = await TokenRepo.findByUserId(tokenPayload.id);
+
+        if (fullInfo.refreshToken !== refreshToken) {
+          throw new Error("Invalid refresh token");
+        }
+        return true;
+      } else {
+        throw new Error("Invalid refresh token");
+      }
+    } catch (error: any) {
+      return genericAppError({
+        error,
+        defaultMsg: error?.message || "Invalid refresh token",
+      });
+    }
   }
 }
 

@@ -2,19 +2,15 @@ import { UserEmailPwd } from "@/dto/User.dto";
 import UserRepo from "@/repo/User.repo";
 import { UserWithEmailPwdSchema } from "@/validators/schemas/User.schema";
 import { ROLES } from "@/utils/commonType";
-import bcrypt from "bcrypt";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
-
-const saltRounds = 10;
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
     try {
       await UserWithEmailPwdSchema.parseAsync(body);
 
-      const hashPwd = await this.hashPwd(body.password);
-      const newUser = await UserRepo.create({ ...body, password: hashPwd });
+      const newUser = await UserRepo.create(body);
 
       return newUser;
     } catch (error: any) {
@@ -38,27 +34,9 @@ class UserService {
     return 6;
   }
 
-  static async hashPwd(password: string) {
+  static async getUserByEmail(email: string, extraFields?: string[]) {
     try {
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      return hashedPassword;
-    } catch (error) {
-      throw new Error("Unable to process password");
-    }
-  }
-
-  static async comparePwd(password: string, hashedPassword: string) {
-    try {
-      const match = await bcrypt.compare(password, hashedPassword);
-      return match;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  static async getUserByEmail(email: string) {
-    try {
-      const user = await UserRepo.findByEmail(email);
+      const user = await UserRepo.findByEmail(email, extraFields);
 
       if (user.id) {
         return user;

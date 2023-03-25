@@ -10,6 +10,10 @@ type Key = keyof UserInfo;
 
 type AKey = keyof AdminInfo;
 
+type UserType = AdminInfo | UserInfo;
+
+type ExtendedInfo = UserType & Record<string, any>;
+
 const defaultKeys: Key[] = [
   "id",
   "email",
@@ -89,15 +93,17 @@ class UserRepository extends BaseRespoitory {
     return 5;
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string, extraFields?: string[]) {
     try {
       const result = await this.query(
         format("SELECT * FROM users WHERE email=%L LIMIT 1;", [email])
       );
 
       const user = pick(
-        toCamelCase<UserInfo>(result?.rows[0] ?? {}),
-        defaultKeys
+        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
+        !extraFields?.length
+          ? defaultKeys
+          : [...new Set([...defaultKeys, ...extraFields])]
       );
 
       return user;
