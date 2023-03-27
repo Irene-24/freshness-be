@@ -11,6 +11,7 @@ describe("Auth Service", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   test("Can login a customer with email and password - success", async () => {
     (UserRepo.findByEmail as jest.Mock).mockResolvedValue(
       Promise.resolve({
@@ -22,7 +23,7 @@ describe("Auth Service", () => {
     );
 
     const mock = jest.spyOn(passwordUtils, "comparePwd");
-    mock.mockName("comparePwd").mockImplementation(() => Promise.resolve(true));
+    mock.mockImplementation(() => Promise.resolve(true));
 
     const result = (await AuthService.customerPasswordLogin(
       "test@email.com",
@@ -36,6 +37,5 @@ describe("Auth Service", () => {
     expect(result.user.email).toEqual("test@email.com");
     expect(result.user.password).toEqual("password");
     expect(result.user.role).toEqual(ROLES.CUSTOMER);
-    mock.mockRestore();
   });
 });

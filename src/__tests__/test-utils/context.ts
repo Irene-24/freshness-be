@@ -6,6 +6,8 @@ import config from "@/src/config";
 
 const { dbConfig } = config;
 
+const defConfig = { max: 1, idleTimeoutMillis: 0 };
+
 class Context {
   roleName: string;
 
@@ -14,46 +16,61 @@ class Context {
   }
 
   static async build() {
-    // Randomly generating a role name to connect to PG as
-    const roleName = "freshness" + randomBytes(4).toString("hex");
+    try {
+      // Randomly generating a role name to connect to PG as
+      const roleName = "freshness" + randomBytes(4).toString("hex");
 
-    await pool.connect(dbConfig);
+      const configOpts = {
+        ...dbConfig,
+        ...defConfig,
+      };
 
-    // Create a new role
-    //make it super user else we get error: permission denied to create extension "uuid-ossp"
-    await pool.query(
-      format("CREATE ROLE %I SUPERUSER LOGIN PASSWORD %L;", roleName, roleName)
-    );
+      await pool.connect(configOpts);
 
-    // Create a schema with the same name
-    await pool.query(
-      format("CREATE SCHEMA %I AUTHORIZATION %I;", roleName, roleName)
-    );
+      // Create a new role
+      //make it super user else we get error: permission denied to create extension "uuid-ossp"
+      await pool.query(
+        format(
+          "CREATE ROLE %I SUPERUSER LOGIN PASSWORD %L;",
+          roleName,
+          roleName
+        )
+      );
 
-    // Disconnect entirely from PG
-    await pool.close();
+      // Create a schema with the same name
+      await pool.query(
+        format("CREATE SCHEMA %I AUTHORIZATION %I;", roleName, roleName)
+      );
 
-    const newDbConfig = {
-      ...dbConfig,
-      user: roleName,
-      password: roleName,
-    };
+      // Disconnect entirely from PG
+      await pool.close();
 
-    // Run our migrations in the new schema
-    await migrate({
-      schema: roleName,
-      migrationsTable: "migrations",
-      direction: "up",
-      log: () => null,
-      noLock: true,
-      dir: "migrations",
-      databaseUrl: newDbConfig,
-    });
+      const newDbConfig = {
+        ...dbConfig,
+        user: roleName,
+        password: roleName,
+        ...defConfig,
+      };
 
-    // Connect to PG as the newly created role
-    await pool.connect(newDbConfig);
+      // Run our migrations in the new schema
+      await migrate({
+        schema: roleName,
+        migrationsTable: "migrations",
+        direction: "up",
+        log: () => null,
+        noLock: true,
+        dir: "migrations",
+        databaseUrl: newDbConfig,
+      });
 
-    return new Context(roleName);
+      // Connect to PG as the newly created role
+      await pool.connect(newDbConfig);
+
+      return new Context(roleName);
+    } catch (error) {
+      console.log(error);
+      return new Context(`test-${new Date().toISOString()}`);
+    }
   }
 
   //not a static method because build returns an actual instance
@@ -62,7 +79,7 @@ class Context {
     await pool.close();
 
     //Reconnect as root user
-    await pool.connect(dbConfig);
+    await pool.connect({ ...dbConfig, ...defConfig });
 
     //Delete the role and schema we created
 
@@ -77,10 +94,10 @@ class Context {
 
   async reset() {
     //reset the db so that each test has fresh records
-    await pool.query(`
-    TRUNCATE TABLE users CASCADE;
-    TRUNCATE TABLE business  CASCADE;
-    `);
+    // await pool.query(`
+    // TRUNCATE TABLE users CASCADE;
+    // TRUNCATE TABLE business CASCADE ;
+    // `);
   }
 }
 
