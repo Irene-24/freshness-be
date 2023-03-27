@@ -77,10 +77,10 @@ class Context {
 
   async reset() {
     //reset the db so that each test has fresh records
-    // await pool.query(`
-    // DROP TABLE users;
-    // DROP TABLE business;
-    // `);
+    await pool.query(`
+    TRUNCATE TABLE users CASCADE;
+    TRUNCATE TABLE business  CASCADE;
+    `);
   }
 }
 

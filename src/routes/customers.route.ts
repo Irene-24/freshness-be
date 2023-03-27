@@ -1,4 +1,6 @@
 import CustomerController from "@/controllers/customers.controllers";
+import { CustomReq } from "@/utils/commonType";
+import { checkLoggedIn } from "@/validators/checkLoggedIn";
 import { checkEmailNotExists } from "@/validators/checkUserEmail";
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import {
@@ -23,6 +25,15 @@ const customerRoutes = (app: Router) => {
   route.get("/", (req: Request, res: Response, next: NextFunction) => {
     res.json({});
   });
+
+  //deleet later
+  route.get(
+    "/protected",
+    checkLoggedIn,
+    (req: Request, res: Response, next: NextFunction) => {
+      res.json({ user: (req as CustomReq).user });
+    }
+  );
 };
 
 export default customerRoutes;

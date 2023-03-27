@@ -89,8 +89,26 @@ class UserRepository extends BaseRespoitory {
     return 5;
   }
 
-  findById(id: string) {
-    return 5;
+  async findById(id: string, extraFields?: string[]) {
+    try {
+      const result = await this.query(
+        format("SELECT * FROM users WHERE  id=%L LIMIT 1;", [id])
+      );
+
+      const user = pick(
+        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
+        !extraFields?.length
+          ? defaultKeys
+          : [...new Set([...defaultKeys, ...extraFields])]
+      );
+
+      return user;
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: `Unable find user with id ${id}`,
+      });
+    }
   }
 
   async findByEmail(email: string, extraFields?: string[]) {

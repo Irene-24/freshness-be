@@ -1,17 +1,13 @@
-import { UserInfo } from "@/dto/User.dto";
-import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { ROLES } from "@/utils/commonType";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 
-interface CustomReq extends Request {
-  user: UserInfo;
-}
+import { CustomReq } from "@/utils/commonType";
 
 const checkRole =
   (role: string) =>
   async (req: CustomReq, res: Response, next: NextFunction) => {
-    if (!req.user) {
+    if (!req.user?.id) {
       return next(
         new AppError({
           statusCode: 404,

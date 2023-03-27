@@ -64,6 +64,30 @@ class UserService {
       });
     }
   }
+
+  static async getUserById(id: string, extraFields?: string[]) {
+    try {
+      const user = await UserRepo.findById(id, extraFields);
+
+      if (user.id) {
+        return user;
+      }
+
+      throw new AppError({
+        body: {
+          error: `No user with id="${id}" exists`,
+        },
+        message: "Unable to find user",
+        statusCode: 404,
+      });
+    } catch (error: any) {
+      throw new AppError({
+        body: error.body ?? error,
+        message: error.message ?? "Error finding user by id",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
+  }
 }
 
 export default UserService;

@@ -3,7 +3,6 @@ import CryptoJS from "crypto-js";
 import config from "@/src/config";
 import { AppError } from "@/utils/APIError";
 import TokenRepo from "@/repo/TokenRepo";
-import { genericAppError } from "@/utils/errorHandler";
 
 const { jwtConfig } = config;
 
@@ -72,6 +71,7 @@ class TokenService {
       throw new AppError({
         message: error.message ?? "Unable to decode JWT",
         body: error,
+        statusCode: 401,
       });
     }
   }
