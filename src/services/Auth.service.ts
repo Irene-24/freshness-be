@@ -30,6 +30,10 @@ class AuthService {
     return this.loginWithPassword(email, password, ROLES.CUSTOMER);
   }
 
+  static async merchantPasswordLogin(email: string, password: string) {
+    return this.loginWithPassword(email, password, ROLES.MERCHANT);
+  }
+
   //customerlogin via github
 }
 

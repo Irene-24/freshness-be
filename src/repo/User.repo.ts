@@ -5,6 +5,7 @@ import { toCamelCase, toCamelCaseRows } from "@/utils/casing";
 import { pick } from "@/utils/miscHelpers";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
+import { SSO_PROVIDER } from "@/utils/commonType";
 
 type Key = keyof UserInfo;
 
@@ -54,8 +55,8 @@ class UserRepository extends BaseRespoitory {
     try {
       const result = await this.query(
         format(
-          "INSERT INTO users (email, avatar_url, id, user_name, role) VALUES %L RETURNING *;",
-          [[email, avatar_url, id, login, role]]
+          "INSERT INTO users (email, avatar_url, sso_provider_user_id, user_name, role, sso_provider,is_verified) VALUES %L RETURNING *;",
+          [[email, avatar_url, id, login, role, SSO_PROVIDER.GITHUB, true]]
         )
       );
 
@@ -129,6 +130,37 @@ class UserRepository extends BaseRespoitory {
       throw new AppError({
         body: error,
         message: `Unable find user with email ${email}`,
+      });
+    }
+  }
+
+  async findBySSOID(
+    id: string | number,
+    provider: SSO_PROVIDER,
+    extraFields?: string[]
+  ) {
+    try {
+      const result = await this.query(
+        format(
+          "SELECT * FROM users WHERE sso_provider=%1$L AND sso_provider_user_id=%2$L LIMIT 1;",
+
+          provider,
+          id
+        )
+      );
+
+      const user = pick(
+        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
+        !extraFields?.length
+          ? defaultKeys
+          : [...new Set([...defaultKeys, ...extraFields])]
+      );
+
+      return user;
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: `Unable find user with this github id`,
       });
     }
   }

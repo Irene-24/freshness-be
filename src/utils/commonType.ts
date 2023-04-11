@@ -12,3 +12,12 @@ export const enum ROLES {
 export interface CustomReq extends Request {
   user: UserInfo;
 }
+
+export interface GitHubState {
+  siteUrl: string;
+  site: Omit<ROLES, ROLES.ADMIN>;
+}
+
+export const enum SSO_PROVIDER {
+  GITHUB = "GITHUB",
+}

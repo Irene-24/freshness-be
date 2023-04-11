@@ -1,4 +1,6 @@
 import AuthController from "@/controllers/auth.controller";
+import GitHubController from "@/controllers/github.controller";
+
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 
 import {
@@ -18,6 +20,12 @@ const authRoutes = (app: Router) => {
     validateReqBody(EmailPwdSchema),
     AuthController.loginCustomerWithPassword
   );
+
+  route.get("/refresh", AuthController.refreshToken);
+
+  route.get("/github-callback", GitHubController.authoriseUser);
+
+  route.get("/github", GitHubController.initiateAuth);
 };
 
 export default authRoutes;

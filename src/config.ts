@@ -52,6 +52,12 @@ export default {
   jwtConfig: {
     jwtSecret: process.env.JWT_SECRET,
     refreshSecret: process.env.SECRET_KEY,
+    duration: process.env.JWT_DUR,
+  },
+  githubConfig: {
+    clientId: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackUrl: process.env.CALLBACK_URL,
   },
   emailConfig: {},
 };

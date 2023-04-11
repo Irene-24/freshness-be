@@ -6,31 +6,6 @@ import TokenRepo from "@/repo/TokenRepo";
 
 const { jwtConfig } = config;
 
-const encode = (value: string) => {
-  if (!jwtConfig.refreshSecret) {
-    throw new Error("Missing 'SALT'");
-  }
-
-  if (!value) {
-    throw new Error("Missing value");
-  }
-
-  return CryptoJS.AES.encrypt(value, jwtConfig.refreshSecret).toString();
-};
-
-const decode = (value: string) => {
-  if (!jwtConfig.refreshSecret) {
-    throw new Error("Missing 'SALT'");
-  }
-
-  if (!value) {
-    throw new Error("Missing value");
-  }
-
-  const bytes = CryptoJS.AES.decrypt(value, jwtConfig.refreshSecret);
-  return bytes.toString(CryptoJS.enc.Utf8);
-};
-
 interface UserIDJwtPayload extends JwtPayload {
   id: string;
 }
@@ -47,7 +22,7 @@ class TokenService {
   static async generateJWT(id: string) {
     try {
       const jwt = sign({ id }, jwtConfig.jwtSecret as string, {
-        expiresIn: "10m",
+        expiresIn: jwtConfig.duration || "10m",
       });
 
       return jwt;
@@ -78,7 +53,7 @@ class TokenService {
 
   static async generateRefreshToken(id: string) {
     try {
-      const refreshToken = encode(
+      const refreshToken = this.encode(
         JSON.stringify({
           id,
           duration: week,
@@ -99,7 +74,9 @@ class TokenService {
 
   static async verifyRefreshToken(refreshToken: string) {
     try {
-      const tokenPayload: RefreshPayload = JSON.parse(decode(refreshToken));
+      const tokenPayload: RefreshPayload = JSON.parse(
+        this.decode(refreshToken)
+      );
 
       if (!tokenPayload.id) {
         throw new Error("Invalid refresh token");
@@ -114,7 +91,7 @@ class TokenService {
         if (fullInfo.refreshToken !== refreshToken) {
           throw new Error("Invalid refresh token");
         }
-        return true;
+        return fullInfo;
       } else {
         throw new Error("Invalid refresh token");
       }
@@ -125,6 +102,35 @@ class TokenService {
         statusCode: 401,
       });
     }
+  }
+
+  static getDur() {
+    return week;
+  }
+
+  static decode(value: string) {
+    if (!jwtConfig.refreshSecret) {
+      throw new Error("Missing 'SALT'");
+    }
+
+    if (!value) {
+      throw new Error("Missing value");
+    }
+
+    const bytes = CryptoJS.AES.decrypt(value, jwtConfig.refreshSecret);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  }
+
+  static encode(value: string) {
+    if (!jwtConfig.refreshSecret) {
+      throw new Error("Missing 'SALT'");
+    }
+
+    if (!value) {
+      throw new Error("Missing value");
+    }
+
+    return CryptoJS.AES.encrypt(value, jwtConfig.refreshSecret).toString();
   }
 }
 

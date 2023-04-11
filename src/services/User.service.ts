@@ -1,10 +1,10 @@
-import { UserEmailPwd } from "@/dto/User.dto";
 import UserRepo from "@/repo/User.repo";
 import { UserWithEmailPwdSchema } from "@/validators/schemas/User.schema";
-import { ROLES } from "@/utils/commonType";
+import { ROLES, SSO_PROVIDER } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
+import { GithHubUser, UserEmailPwd } from "@/dto/User.dto";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
@@ -84,6 +84,60 @@ class UserService {
       throw new AppError({
         body: error.body ?? error,
         message: error.message ?? "Error finding user by id",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
+  }
+
+  static async getUserBySSOId(
+    id: string | number,
+    provider: SSO_PROVIDER,
+    extraFields?: string[]
+  ) {
+    try {
+      const user = await UserRepo.findBySSOID(id, provider, extraFields);
+
+      if (user.id) {
+        return user;
+      }
+
+      throw new AppError({
+        body: {
+          error: `No user with ${provider} id="${id}" exists`,
+        },
+        message: "Unable to find user",
+        statusCode: 404,
+      });
+    } catch (error: any) {
+      throw new AppError({
+        body: error.body ?? error,
+        message: error.message ?? "Error finding user by sso id",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
+  }
+
+  static async createUserByGithub({
+    email,
+    avatar_url,
+    id,
+    login,
+    role,
+  }: GithHubUser) {
+    try {
+      const newUser = await UserRepo.createWithGitHub({
+        email,
+        avatar_url,
+        id,
+        login,
+        role,
+      });
+
+      return newUser;
+    } catch (error: any) {
+      throw new AppError({
+        body: error.body ?? error,
+        message: error.message ?? "Error creating user with github",
         statusCode: error?.statusCode ?? 500,
       });
     }
