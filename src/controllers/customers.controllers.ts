@@ -28,6 +28,13 @@ class CustomerController {
       );
     }
   }
+
+
+  //get customer by id
+  //disable customer
+  //update customer info
+
+  //get all customers
 }
 
 export default CustomerController;

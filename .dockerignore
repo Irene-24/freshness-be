@@ -56,3 +56,4 @@ docker*.yml
 node_modules
 
 sql
+notes.md
