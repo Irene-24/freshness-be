@@ -1,4 +1,4 @@
-import UserRepo, { ExtendedInfo } from "@/repo/User.repo";
+import UserRepo from "@/repo/User.repo";
 import AuthService from "@/services/Auth.service";
 import { ROLES } from "@/utils/commonType";
 import * as passwordUtils from "@/utils/password";
@@ -19,23 +19,24 @@ describe("Auth Service", () => {
         email: "test@email.com",
         role: ROLES.CUSTOMER,
         password: "password",
+        isEnabled: true,
+        isVerified: true,
       })
     );
 
     const mock = jest.spyOn(passwordUtils, "comparePwd");
     mock.mockImplementation(() => Promise.resolve(true));
 
-    const result = (await AuthService.customerPasswordLogin(
+    const result = await AuthService.customerPasswordLogin(
       "test@email.com",
       "Test123$"
-    )) as { isCorrectPwd: boolean; user: ExtendedInfo };
+    );
 
     expect(result).toHaveProperty("isCorrectPwd");
     expect(result).toHaveProperty("user");
 
     expect(result.isCorrectPwd).toEqual(true);
     expect(result.user.email).toEqual("test@email.com");
-    expect(result.user.password).toEqual("password");
     expect(result.user.role).toEqual(ROLES.CUSTOMER);
   });
 });

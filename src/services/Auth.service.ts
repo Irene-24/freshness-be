@@ -1,9 +1,9 @@
 import UserRepo from "@/repo/User.repo";
 import { ROLES } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
-import { UserInfo } from "@/dto/User.dto";
 import { comparePwd } from "@/utils/password";
 import { filterUserInfo, isCustomer, isMerchant } from "@/utils/user";
+import config from "@/src/config";
 
 class AuthService {
   static async loginWithPassword(email: string, password: string, role: ROLES) {
@@ -19,6 +19,16 @@ class AuthService {
           },
           message: "Unable to find user",
           statusCode: 404,
+        });
+      }
+
+      if (!user.isVerified && !config.isDev) {
+        throw new AppError({
+          body: {
+            error: `User with email="${email}" not verified`,
+          },
+          message: "This user has not verified their account",
+          statusCode: 403,
         });
       }
 

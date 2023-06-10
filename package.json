@@ -13,7 +13,7 @@
     "format": "eslint src/**/*.ts --fix",
     "pretty": "prettier --write \"src/**/*.ts\"",
     "migrate": "node-pg-migrate",
-    "test": "jest  --no-cache"
+    "test": "cross-env NODE_ENV=test jest  --no-cache --runInBand"
   },
   "keywords": [],
   "author": "",

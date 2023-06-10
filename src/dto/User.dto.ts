@@ -1,5 +1,5 @@
 import { NullableType, ROLES, CamelCase } from "@/utils/commonType";
-import { User } from "@/src/db/schemas/User.schema";
+import { User } from "@/src/db/schemas/User";
 
 export interface UserEmailPwd {
   email: string;

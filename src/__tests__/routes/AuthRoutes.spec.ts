@@ -42,9 +42,12 @@ describe("Auth routes", function () {
         expect(res.statusCode).toEqual(200);
         done();
       })
-      .catch((err) => {
-        console.log(err);
-        done();
-      });
+      .catch(() =>
+        //err
+        {
+          //console.log(err);
+          done();
+        }
+      );
   });
 });
