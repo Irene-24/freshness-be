@@ -3,16 +3,35 @@ import { ROLES } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { UserInfo } from "@/dto/User.dto";
 import { comparePwd } from "@/utils/password";
+import { filterUserInfo, isCustomer, isMerchant } from "@/utils/user";
 
 class AuthService {
   static async loginWithPassword(email: string, password: string, role: ROLES) {
     try {
-      const user = await UserRepo.findByEmail(email, ["password"]);
+      const user = await UserRepo.findByEmail(email);
+
+      let filteredUser: Omit<typeof user, "password" | "createdBy"> = user;
+
+      if (!user.isEnabled) {
+        throw new AppError({
+          body: {
+            error: `No user with email="${email}" exists`,
+          },
+          message: "Unable to find user",
+          statusCode: 404,
+        });
+      }
 
       if (user.role === role) {
-        const isCorrectPwd = await comparePwd(password, user.password);
+        const isCorrectPwd = await comparePwd(
+          password,
+          user.password as string
+        );
 
-        return { isCorrectPwd, user: user as UserInfo };
+        if (isCustomer(user.role) || isMerchant(user.role)) {
+          filteredUser = filterUserInfo(user, ["createdBy"]);
+        }
+        return { isCorrectPwd, user: filteredUser };
       }
 
       throw new Error("Unable to find user");
@@ -33,8 +52,6 @@ class AuthService {
   static async merchantPasswordLogin(email: string, password: string) {
     return this.loginWithPassword(email, password, ROLES.MERCHANT);
   }
-
-  //customerlogin via github
 }
 
 export default AuthService;

@@ -1,5 +1,6 @@
-import CustomerController from "@/controllers/customers.controllers";
+import MerchantController from "@/controllers/merchant.controller";
 import { checkLoggedIn } from "@/validators/checkLoggedIn";
+
 import { checkEmailNotExists } from "@/validators/checkUserEmail";
 import { IDSchema } from "@/validators/schemas/Id.schema";
 import { EmailPwdSchema } from "@/validators/schemas/User.schema";
@@ -7,23 +8,23 @@ import { EmailPwdSchema } from "@/validators/schemas/User.schema";
 import { validateReqBody, validateReqParams } from "@/validators/validate";
 import { Router } from "express";
 
-const customerRoutes = (app: Router) => {
+const merchantRoutes = (app: Router) => {
   const route = Router();
 
-  app.use("/customers", route);
+  app.use("/merchants", route);
 
   route.post(
     "/register-with-email-and-password",
     validateReqBody(EmailPwdSchema),
     checkEmailNotExists,
-    CustomerController.createWithEmailAndPassword
+    MerchantController.createWithEmailAndPassword
   );
 
   route.get(
     "/:id",
     validateReqParams(IDSchema),
     checkLoggedIn,
-    CustomerController.getCustomerById
+    MerchantController.getMerchantById
   );
 
   //get all
@@ -31,4 +32,4 @@ const customerRoutes = (app: Router) => {
   //disable
 };
 
-export default customerRoutes;
+export default merchantRoutes;

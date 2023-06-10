@@ -5,6 +5,7 @@ import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
 import { GithHubUser, UserEmailPwd } from "@/dto/User.dto";
+import { filterUserInfo, isCustomer, isMerchant } from "@/utils/user";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
@@ -24,29 +25,45 @@ class UserService {
       return genericAppError({
         error,
         defaultMsg:
-          error.message || "Unable to create user with password and email",
+          error?.message || "Unable to create user with password and email",
       });
     }
   }
 
   static async customerCreateWithEmailPwd(body: Omit<UserEmailPwd, "role">) {
-    return await this.registerWithEmailPwd({ ...body, role: ROLES.CUSTOMER });
+    const user = await this.registerWithEmailPwd({
+      ...body,
+      role: ROLES.CUSTOMER,
+    });
+
+    return filterUserInfo(user, ["createdBy"]);
   }
 
   static async merchantCreateWithEmailPwd(body: Omit<UserEmailPwd, "role">) {
-    return await this.registerWithEmailPwd({ ...body, role: ROLES.MERCHANT });
+    const merchant = await this.registerWithEmailPwd({
+      ...body,
+      role: ROLES.MERCHANT,
+    });
+
+    return filterUserInfo(merchant, ["createdBy"]);
   }
 
   static async createAdmin() {
     return 6;
   }
 
-  static async getUserByEmail(email: string, extraFields?: string[]) {
+  static async getUserByEmail(email: string) {
     try {
-      const user = await UserRepo.findByEmail(email, extraFields);
+      const user = await UserRepo.findByEmail(email);
 
       if (user.id) {
-        return user;
+        const removed = [];
+
+        if (isCustomer(user.role) || isMerchant(user.role)) {
+          removed.push("createdBy");
+        }
+
+        return filterUserInfo(user, ["createdBy"]);
       }
 
       throw new AppError({
@@ -58,19 +75,25 @@ class UserService {
       });
     } catch (error: any) {
       throw new AppError({
-        body: error.body ?? error,
-        message: error.message ?? "Error finding user by email",
+        body: error?.body ?? error,
+        message: error?.message ?? "Error finding user by email",
         statusCode: error?.statusCode ?? 500,
       });
     }
   }
 
-  static async getUserById(id: string, extraFields?: string[]) {
+  static async getUserById(id: string) {
     try {
-      const user = await UserRepo.findById(id, extraFields);
+      const user = await UserRepo.findById(id);
 
       if (user.id) {
-        return user;
+        const removed = [];
+
+        if (isCustomer(user.role) || isMerchant(user.role)) {
+          removed.push("createdBy");
+        }
+
+        return filterUserInfo(user, ["createdBy"]);
       }
 
       throw new AppError({
@@ -82,23 +105,25 @@ class UserService {
       });
     } catch (error: any) {
       throw new AppError({
-        body: error.body ?? error,
-        message: error.message ?? "Error finding user by id",
+        body: error?.body ?? error,
+        message: error?.message ?? "Error finding user by id",
         statusCode: error?.statusCode ?? 500,
       });
     }
   }
 
-  static async getUserBySSOId(
-    id: string | number,
-    provider: SSO_PROVIDER,
-    extraFields?: string[]
-  ) {
+  static async getUserBySSOId(id: string | number, provider: SSO_PROVIDER) {
     try {
-      const user = await UserRepo.findBySSOID(id, provider, extraFields);
+      const user = await UserRepo.findBySSOID(id, provider);
 
       if (user.id) {
-        return user;
+        const removed = [];
+
+        if (isCustomer(user.role) || isMerchant(user.role)) {
+          removed.push("createdBy");
+        }
+
+        return filterUserInfo(user, ["createdBy"]);
       }
 
       throw new AppError({
@@ -110,8 +135,8 @@ class UserService {
       });
     } catch (error: any) {
       throw new AppError({
-        body: error.body ?? error,
-        message: error.message ?? "Error finding user by sso id",
+        body: error?.body ?? error,
+        message: error?.message ?? "Error finding user by sso id",
         statusCode: error?.statusCode ?? 500,
       });
     }
@@ -133,11 +158,11 @@ class UserService {
         role,
       });
 
-      return newUser;
+      return filterUserInfo(newUser, ["createdBy"]);
     } catch (error: any) {
       throw new AppError({
-        body: error.body ?? error,
-        message: error.message ?? "Error creating user with github",
+        body: error?.body ?? error,
+        message: error?.message ?? "Error creating user with github",
         statusCode: error?.statusCode ?? 500,
       });
     }

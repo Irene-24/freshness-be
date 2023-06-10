@@ -23,14 +23,35 @@ class CustomerController {
         new AppError({
           body: error?.body ?? error,
           statusCode: error?.statusCode ?? 400,
-          message: error.message ?? "Error creating user",
+          message: error.message ?? "Error creating customer",
         })
       );
     }
   }
 
+  static async getCustomerById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = await UserService.getUserById(req.params.id);
 
-  //get customer by id
+      return res.status(200).json({
+        message: "Found customer",
+        data: user,
+      });
+    } catch (error: any) {
+      next(
+        new AppError({
+          body: error?.body ?? error,
+          statusCode: error?.statusCode ?? 404,
+          message: error.message ?? "Unable to find customer",
+        })
+      );
+    }
+  }
+
   //disable customer
   //update customer info
 

@@ -1,4 +1,5 @@
-import { NullableType, ROLES } from "@/utils/commonType";
+import { NullableType, ROLES, CamelCase } from "@/utils/commonType";
+import { User } from "@/src/db/schemas/User.schema";
 
 export interface UserEmailPwd {
   email: string;
@@ -6,19 +7,7 @@ export interface UserEmailPwd {
   role: ROLES;
 }
 
-export interface UserInfo {
-  id: string;
-  email: string;
-  firstName: NullableType<string>;
-  lastName: NullableType<string>;
-  avatarUrl: NullableType<string>;
-  userName: NullableType<string>;
-  role: ROLES;
-}
-
-export interface AdminInfo extends UserInfo {
-  createdBy: NullableType<string>;
-}
+export type UserInfo = CamelCase<User>;
 
 export interface GithHubUserInfo {
   id: string | number;

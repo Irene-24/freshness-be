@@ -34,4 +34,12 @@ const UserWithEmailPwdSchema = z.object({
 
 const EmailPwdSchema = UserWithEmailPwdSchema.omit({ role: true });
 
-export { UserWithEmailPwdSchema, EmailPwdSchema };
+const UrlRoleSchema = z.object({
+  siteUrl: z.string().url("Please provide callback site url"),
+  role: z.enum([ROLES.MERCHANT, ROLES.CUSTOMER], {
+    required_error: "Please select a role",
+    invalid_type_error: `Roles must be one of ${ROLES.MERCHANT} or ${ROLES.CUSTOMER}`,
+  }),
+});
+
+export { UserWithEmailPwdSchema, EmailPwdSchema, UrlRoleSchema };

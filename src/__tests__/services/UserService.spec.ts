@@ -20,10 +20,10 @@ describe("User Service", () => {
       })
     );
 
-    const result = (await UserService.customerCreateWithEmailPwd({
+    const result = await UserService.customerCreateWithEmailPwd({
       email: "test@email.com",
       password: "Test123$",
-    })) as UserInfo;
+    });
 
     expect(result).toHaveProperty("id");
     expect(result).toHaveProperty("email");

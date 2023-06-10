@@ -7,7 +7,6 @@ abstract class BaseRespoitory {
 
   abstract create(body: any): any;
   abstract update(body: any): any;
-  abstract find(): any;
   abstract findById(id: string): any;
   abstract delete(id: string): any;
 }

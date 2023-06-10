@@ -88,8 +88,8 @@ class GithubService {
     }
   }
 
-  static async startAuth(site: Exclude<ROLES, ROLES.ADMIN>, siteUrl: string) {
-    let state = JSON.stringify({ siteUrl, site });
+  static async startAuth(role: Exclude<ROLES, ROLES.ADMIN>, siteUrl: string) {
+    let state = JSON.stringify({ siteUrl, role });
     const buff = Buffer.from(state, "utf-8");
     state = buff.toString("base64");
 

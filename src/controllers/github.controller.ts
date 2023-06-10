@@ -3,7 +3,7 @@ import TokenService from "@/services/Token.service";
 import UserService from "@/services/User.service";
 import { GitHubState, ROLES, SSO_PROVIDER } from "@/utils/commonType";
 import Cookies from "cookies";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import config from "@/src//config";
 
 const handleCookieRes = async (id: string, req: Request, res: Response) => {
@@ -33,22 +33,22 @@ class GitHubController {
       //convert to moddleware?
       const allowed = [ROLES.MERCHANT, ROLES.CUSTOMER];
 
-      const site = req.query.site;
+      const role = req.query.role;
       const siteUrl = req.query.siteUrl as string;
 
       if (
         !siteUrl ||
         typeof siteUrl !== "string" ||
-        typeof site !== "string" ||
-        !allowed.includes(site as ROLES)
+        typeof role !== "string" ||
+        !allowed.includes(role as ROLES)
       ) {
         return res
           .status(400)
-          .json({ message: "Missing/Invalid site/siteUrl" });
+          .json({ message: "Missing/Invalid role/siteUrl" });
       }
 
       const url = await GithubService.startAuth(
-        site as ROLES.CUSTOMER | ROLES.CUSTOMER,
+        role as ROLES.CUSTOMER | ROLES.CUSTOMER,
         siteUrl
       );
 
@@ -73,75 +73,57 @@ class GitHubController {
 
       const token = await GithubService.getGitHubToken(code);
       const user = await GithubService.getUserInfo(token);
-      let email;
-
-      if (!user.email) {
-        email = await GithubService.getUserEmail(token);
-      }
-
-      user.email = user.email ?? email;
-
+      const email = user.email ?? (await GithubService.getUserEmail(token));
       const buff = Buffer.from(req.query.state as unknown as string, "base64");
       const text = buff.toString("ascii");
-
       const state = JSON.parse(text) as GitHubState;
 
-      //check db for user email or ssoid
+      user.email = email;
+      const role = state.role;
+      let newUser: any;
 
       try {
         const existingUser = await UserService.getUserBySSOId(
           user.id,
           SSO_PROVIDER.GITHUB
         );
+        newUser = existingUser;
 
-        try {
+        if (existingUser.role === role) {
           return handleCookieRes(existingUser.id, req, res);
-        } catch (error: any) {
-          //no jwt
-          return res.status(500).json({
-            error: {
-              message: error?.message || "Unable to generate token info",
-              body: error?.body,
-            },
+        }
+      } catch (error: any) {
+        throw new Error(
+          error?.message || "Unable to complete authorization with github"
+        );
+      }
+
+      //no existing user
+      if (!newUser?.id) {
+        if (role === ROLES.CUSTOMER) {
+          newUser = await UserService.createUserByGithub({
+            ...user,
+            role: ROLES.CUSTOMER,
           });
         }
-      } catch (error) {
-        //no user
 
-        const role = state.site;
-        let newUser: any;
-
-        try {
-          if (role === ROLES.CUSTOMER) {
-            newUser = await UserService.createUserByGithub({
-              ...user,
-              role: ROLES.CUSTOMER,
-            });
-          }
-
-          if (role === ROLES.MERCHANT) {
-            newUser = await UserService.createUserByGithub({
-              ...user,
-              role: ROLES.MERCHANT,
-            });
-          }
-
-          return handleCookieRes(newUser.id, req, res);
-        } catch (error: any) {
-          return res.status(500).json({
-            error: {
-              message: error?.message || "Unable to create user with github",
-              body: error?.body,
-            },
+        if (role === ROLES.MERCHANT) {
+          newUser = await UserService.createUserByGithub({
+            ...user,
+            role: ROLES.MERCHANT,
           });
         }
+
+        return handleCookieRes(newUser.id, req, res);
+      } else {
+        //user exists but role is not correct
+        throw new Error("Invalid user access data");
       }
     } catch (error: any) {
-      //any uncaught error
-
       return res.status(500).json({
         error: {
-          message: error?.message || "Unable to complete auth with github",
+          message:
+            error?.message || "Unable to complete authorization with github",
           body: error?.body,
         },
       });

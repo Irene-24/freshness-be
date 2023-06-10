@@ -25,7 +25,7 @@ export const checkLoggedIn = async (
     const token = authHeader.split(" ")[1];
     const userId = await TokenService.validateJWT(token);
 
-    const user = (await UserService.getUserById(userId)) as UserInfo;
+    const user = await UserService.getUserById(userId);
 
     (req as CustomReq).user = user;
 

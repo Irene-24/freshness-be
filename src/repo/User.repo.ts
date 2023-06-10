@@ -1,31 +1,10 @@
 import BaseRespoitory from "@/repo/Base.repo";
-import { AdminInfo, GithHubUser, UserEmailPwd, UserInfo } from "@/dto/User.dto";
+import { GithHubUser, UserEmailPwd, UserInfo } from "@/dto/User.dto";
 import format from "pg-format";
 import { toCamelCase, toCamelCaseRows } from "@/utils/casing";
-import { pick } from "@/utils/miscHelpers";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { SSO_PROVIDER } from "@/utils/commonType";
-
-type Key = keyof UserInfo;
-
-type AKey = keyof AdminInfo;
-
-type UserType = AdminInfo | UserInfo;
-
-export type ExtendedInfo = UserType & Record<string, any>;
-
-const defaultKeys: Key[] = [
-  "id",
-  "email",
-  "firstName",
-  "lastName",
-  "avatarUrl",
-  "userName",
-  "role",
-];
-
-const adminKeys: AKey[] = [...defaultKeys, "createdBy"];
 
 class UserRepository extends BaseRespoitory {
   async create({ email, password, role }: UserEmailPwd) {
@@ -37,10 +16,7 @@ class UserRepository extends BaseRespoitory {
         )
       );
 
-      const newUser = pick(
-        toCamelCase<UserInfo>(result?.rows[0] ?? {}),
-        defaultKeys
-      );
+      const newUser = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return newUser;
     } catch (error: any) {
@@ -60,10 +36,7 @@ class UserRepository extends BaseRespoitory {
         )
       );
 
-      const newUser = pick(
-        toCamelCase<UserInfo>(result?.rows[0] ?? {}),
-        defaultKeys
-      );
+      const newUser = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return newUser;
     } catch (error: any) {
@@ -86,22 +59,13 @@ class UserRepository extends BaseRespoitory {
     return 5;
   }
 
-  find() {
-    return 5;
-  }
-
-  async findById(id: string, extraFields?: string[]) {
+  async findById(id: string) {
     try {
       const result = await this.query(
         format("SELECT * FROM users WHERE  id=%L LIMIT 1;", [id])
       );
 
-      const user = pick(
-        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
-        !extraFields?.length
-          ? defaultKeys
-          : [...new Set([...defaultKeys, ...extraFields])]
-      );
+      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return user;
     } catch (error: any) {
@@ -112,18 +76,13 @@ class UserRepository extends BaseRespoitory {
     }
   }
 
-  async findByEmail(email: string, extraFields?: string[]) {
+  async findByEmail(email: string) {
     try {
       const result = await this.query(
         format("SELECT * FROM users WHERE email=%L LIMIT 1;", [email])
       );
 
-      const user = pick(
-        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
-        !extraFields?.length
-          ? defaultKeys
-          : [...new Set([...defaultKeys, ...extraFields])]
-      );
+      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return user;
     } catch (error: any) {
@@ -134,11 +93,7 @@ class UserRepository extends BaseRespoitory {
     }
   }
 
-  async findBySSOID(
-    id: string | number,
-    provider: SSO_PROVIDER,
-    extraFields?: string[]
-  ) {
+  async findBySSOID(id: string | number, provider: SSO_PROVIDER) {
     try {
       const result = await this.query(
         format(
@@ -149,12 +104,7 @@ class UserRepository extends BaseRespoitory {
         )
       );
 
-      const user = pick(
-        toCamelCase<ExtendedInfo>(result?.rows[0] ?? {}),
-        !extraFields?.length
-          ? defaultKeys
-          : [...new Set([...defaultKeys, ...extraFields])]
-      );
+      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return user;
     } catch (error: any) {
