@@ -10,7 +10,7 @@ export const enum ROLES {
 }
 
 export interface CustomReq extends Request {
-  user: UserInfo;
+  user: Omit<UserInfo, "password">;
 }
 
 export interface GitHubState {

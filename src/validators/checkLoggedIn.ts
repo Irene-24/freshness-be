@@ -3,7 +3,6 @@ import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { Request, Response, NextFunction } from "express";
 import { CustomReq } from "@/utils/commonType";
-import { UserInfo } from "@/dto/User.dto";
 
 export const checkLoggedIn = async (
   req: Request,
