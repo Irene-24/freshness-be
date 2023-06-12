@@ -84,7 +84,10 @@ class EmailService {
           },
         });
 
-        await transporter.sendMail(mailBody);
+        const info = await transporter.sendMail(mailBody);
+
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
       }
 
       return true;

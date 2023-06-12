@@ -47,4 +47,11 @@ const snakeToCamel = (str: string) => {
     );
 };
 
-export { omit, snakeToCamel, pick };
+function appendQueryParam(url: string, paramName: string, paramValue: string): string {
+
+  const urlObject = new URL(url);
+  urlObject.searchParams.append(paramName, paramValue);
+  return urlObject.toString();
+}
+
+export { omit, snakeToCamel, pick ,appendQueryParam};

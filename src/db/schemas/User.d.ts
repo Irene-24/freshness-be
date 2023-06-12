@@ -17,8 +17,8 @@ export interface User {
 
   role: ROLES;
 
-  isEnabled: boolean;
-  isVerified: boolean;
+  is_enabled: boolean;
+  is_verified: boolean;
   created_by: NullableType<string>;
   created_at: NullableType<string>;
   updated_at: NullableType<string>;
