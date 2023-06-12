@@ -59,5 +59,7 @@ export default {
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackUrl: process.env.CALLBACK_URL,
   },
-  emailConfig: {},
+  emailConfig: {
+    bravoKey: process.env.BRAVO_KEY,
+  },
 };

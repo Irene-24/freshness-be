@@ -2,7 +2,7 @@ import CustomerController from "@/controllers/customers.controllers";
 import { checkLoggedIn } from "@/validators/checkLoggedIn";
 import { checkEmailNotExists } from "@/validators/checkUserEmail";
 import { IDSchema } from "@/validators/schemas/Id.schema";
-import { EmailPwdSchema } from "@/validators/schemas/User.schema";
+import { RegisterUserSchema } from "@/validators/schemas/User.schema";
 
 import { validateReqBody, validateReqParams } from "@/validators/validate";
 import { Router } from "express";
@@ -14,7 +14,7 @@ const customerRoutes = (app: Router) => {
 
   route.post(
     "/register-with-email-and-password",
-    validateReqBody(EmailPwdSchema),
+    validateReqBody(RegisterUserSchema),
     checkEmailNotExists,
     CustomerController.createWithEmailAndPassword
   );

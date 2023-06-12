@@ -1,3 +1,4 @@
+import EmailService from "@/services/Email.service";
 import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { NextFunction, Request, Response } from "express";
@@ -13,6 +14,8 @@ class CustomerController {
         email: req.body.email,
         password: req.body.password,
       });
+
+      //await EmailService.sendCustomerReg()
 
       return res.status(201).json({
         message: "Created customer",

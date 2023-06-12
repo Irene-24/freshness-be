@@ -1,4 +1,3 @@
-import { UserInfo } from "@/dto/User.dto";
 import UserRepo from "@/repo/User.repo";
 import UserService from "@/services/User.service";
 import { ROLES } from "@/utils/commonType";

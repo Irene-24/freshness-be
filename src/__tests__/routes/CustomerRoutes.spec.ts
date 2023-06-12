@@ -24,10 +24,16 @@ describe("Customer routes", function () {
     context.close();
   });
 
+  const customerBody = {
+    email: "test@email.com",
+    password: "Test123$",
+    callbackUrl: "https://example.com/",
+  };
+
   it("registers a user with a unique email and password", (done) => {
     app
       .post(`${url}/register-with-email-and-password`)
-      .send({ email: "test@email.com", password: "Test123$" })
+      .send(customerBody)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .expect((res) => {
@@ -42,13 +48,13 @@ describe("Customer routes", function () {
   it("fails to register a user with an existing email", (done) => {
     app
       .post(`${url}/register-with-email-and-password`)
-      .send({ email: "test@email.com", password: "Test123$" })
+      .send(customerBody)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .then(() => {
         return app
           .post(`${url}/register-with-email-and-password`)
-          .send({ email: "test@email.com", password: "Test123$" })
+          .send(customerBody)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");
       })
@@ -66,7 +72,11 @@ describe("Customer routes", function () {
   it("fails to register a user with an invalid password", (done) => {
     app
       .post(`${url}/register-with-email-and-password`)
-      .send({ email: "test@email.com", password: "Test123" })
+      .send({
+        email: "test@email.com",
+        password: "Test123",
+        callbackUrl: "https://example.com/",
+      })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .expect((res) => {
