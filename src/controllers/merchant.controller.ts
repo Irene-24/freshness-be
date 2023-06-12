@@ -1,6 +1,7 @@
 import { AppError } from "@/utils/APIError";
 import { NextFunction, Request, Response } from "express";
 import UserService from "@/services/User.service";
+import EmailService from "@/services/Email.service";
 
 class MerchantController {
   static async createWithEmailAndPassword(
@@ -13,6 +14,8 @@ class MerchantController {
         email: req.body.email,
         password: req.body.password,
       });
+
+      //await EmailService.sendMerchantReg()
 
       return res.status(201).json({
         message: "Created merchant",
