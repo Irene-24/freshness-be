@@ -60,6 +60,6 @@ export default {
     callbackUrl: process.env.CALLBACK_URL,
   },
   emailConfig: {
-    brevoKey: process.env.BRAVO_KEY,
+    brevoKey: process.env.BREVO_KEY,
   },
 };

@@ -2,9 +2,10 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import * as Handlebars from "handlebars";
 import * as nodemailer from "nodemailer";
+import * as SibApiV3Sdk from "@sendinblue/client";
+
 import config from "@/src/config";
 import { AppError } from "@/utils/APIError";
-import SibApiV3Sdk from "@sendinblue/client";
 import { ROLES } from "@/utils/commonType";
 
 interface SendEmailConfig {
@@ -24,10 +25,6 @@ interface WelcomeBody {
   email: string;
   callbackUrl: string;
 }
-
-console.log("=================================");
-console.log({ SibApiV3Sdk, key: config.emailConfig.brevoKey });
-console.log("=================================");
 
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
@@ -89,15 +86,15 @@ class EmailService {
       }
 
       if (config.isProd) {
-        const sendSmtpEmail = {
-          subject: mailBody.subject,
-          htmlContent: finalHtml,
-          textContent: mailBody.text,
-          sender: { email: mailBody.to },
-          to: Array.isArray(configData.to)
-            ? configData.to.map((email) => ({ email }))
-            : [{ email: configData.to }],
-        };
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.subject = mailBody.subject;
+        sendSmtpEmail.htmlContent = finalHtml;
+        sendSmtpEmail.textContent = mailBody.text;
+        sendSmtpEmail.sender = { email: mailBody.to };
+        sendSmtpEmail.to = Array.isArray(configData.to)
+          ? configData.to.map((email) => ({ email }))
+          : [{ email: configData.to }];
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);
       } else {
