@@ -17,6 +17,7 @@ interface RefreshPayload {
 }
 
 const week = 7 * 24 * 60 * 60 * 1000;
+const twentyMins = 20 * 60 * 1000;
 
 class TokenService {
   static async generateJWT(id: string) {
@@ -72,34 +73,81 @@ class TokenService {
     }
   }
 
-  static async verifyRefreshToken(refreshToken: string) {
+  static async verifyRefreshToken(
+    refreshToken: string,
+    isEmailToken?: boolean
+  ) {
     try {
       const tokenPayload: RefreshPayload = JSON.parse(
         this.decode(refreshToken)
       );
 
       if (!tokenPayload.id) {
-        throw new Error("Invalid refresh token");
+        throw new Error(`Invalid ${isEmailToken ? "email" : "refresh"} token`);
       }
 
       const now = new Date().getMilliseconds();
       const diff = now - new Date(tokenPayload.createdAt).getMilliseconds();
+      const dur = isEmailToken ? twentyMins : week;
 
-      if (diff < week) {
+      if (diff < dur) {
         const fullInfo = await TokenRepo.findByUserId(tokenPayload.id);
 
         if (fullInfo.refreshToken !== refreshToken) {
-          throw new Error("Invalid refresh token");
+          throw new Error(
+            `Invalid ${isEmailToken ? "email" : "refresh"} token`
+          );
         }
         return fullInfo;
       } else {
-        throw new Error("Invalid refresh token");
+        throw new Error(`Invalid ${isEmailToken ? "email" : "refresh"} token`);
       }
     } catch (error: any) {
       throw new AppError({
-        message: error?.message || "Invalid refresh token",
+        message:
+          error?.message ||
+          `Invalid ${isEmailToken ? "email" : "refresh"} token`,
         body: error?.body ?? error,
         statusCode: 401,
+      });
+    }
+  }
+
+  static async generateEmailToken(userId: string) {
+    try {
+      const token = await this.encode(
+        JSON.stringify({
+          id: userId,
+          duration: "20m",
+          createdAt: new Date().toISOString(),
+        })
+      );
+
+      await TokenRepo.addOrUpdateVerifyToken(userId, token);
+
+      return token;
+    } catch (error: any) {
+      throw new AppError({
+        message: error?.message || "Could not generate refresh token",
+        body: error?.body ?? error,
+      });
+    }
+  }
+
+  static async verifyEmailToken(token: string) {
+    try {
+      const fullInfo = await TokenService.verifyRefreshToken(token, true);
+
+      if (fullInfo.userId) {
+        return true;
+      }
+
+      return false;
+    } catch (error: any) {
+      throw new AppError({
+        message: error?.message || `Invalid email token`,
+        body: error?.body ?? error,
+        statusCode: 400,
       });
     }
   }

@@ -85,6 +85,14 @@ class AuthController {
   //completeresetcustomerpwd
 
   ////verify setup token
+
+  static async confirmEmailToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    return;
+  }
 }
 
 export default AuthController;

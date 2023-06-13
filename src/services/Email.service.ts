@@ -1,7 +1,6 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as Handlebars from "handlebars";
-import * as nodemailer from "nodemailer";
 import * as SibApiV3Sdk from "@sendinblue/client";
 
 import config from "@/src/config";
@@ -20,7 +19,7 @@ interface SendEmailConfig {
   replacer?: (data: any, templateHtmlOrText: string) => string;
 }
 
-interface WelcomeBody {
+interface ConfirmWelcomeBody {
   name: string;
   email: string;
   callbackUrl: string;
@@ -34,8 +33,8 @@ apiInstance.setApiKey(
 );
 
 const EMAILPATHS = {
-  html: "@/src/email-templates/html",
-  text: "@/src/email-templates/text",
+  html: path.resolve(__dirname, "../email-templates/html"),
+  text: path.resolve(__dirname, "../email-templates/text"),
 };
 
 function replacePlaceholders(
@@ -59,7 +58,7 @@ class EmailService {
     replacer,
   }: SendEmailConfig) {
     try {
-      let templateHtml = await fs.readFile(path.resolve(templatePath), "utf8");
+      let templateHtml = await fs.readFile(templatePath, "utf8");
 
       if (replacer) {
         templateHtml = replacer(data, templateHtml);
@@ -78,43 +77,24 @@ class EmailService {
       };
 
       if (plainTextPath) {
-        mailBody.text = await fs.readFile(path.resolve(plainTextPath), "utf8");
+        mailBody.text = await fs.readFile(plainTextPath, "utf8");
 
         if (replacer) {
           mailBody.text = replacer(data, mailBody.text);
         }
       }
 
-      if (config.isProd) {
-        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.subject = mailBody.subject;
-        sendSmtpEmail.htmlContent = finalHtml;
-        sendSmtpEmail.textContent = mailBody.text;
-        sendSmtpEmail.sender = { email: mailBody.to };
-        sendSmtpEmail.to = Array.isArray(configData.to)
-          ? configData.to.map((email) => ({ email }))
-          : [{ email: configData.to }];
+      sendSmtpEmail.subject = mailBody.subject;
+      sendSmtpEmail.htmlContent = finalHtml;
+      sendSmtpEmail.textContent = mailBody.text;
+      sendSmtpEmail.sender = { email: mailBody.to };
+      sendSmtpEmail.to = Array.isArray(configData.to)
+        ? configData.to.map((email) => ({ email }))
+        : [{ email: configData.to }];
 
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-      } else {
-        const testAccount = await nodemailer.createTestAccount();
-
-        const transporter = nodemailer.createTransport({
-          host: "smtp.ethereal.email",
-          port: 587,
-          secure: false, // true for 465, false for other ports
-          auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-          },
-        });
-
-        const info = await transporter.sendMail(mailBody);
-
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      }
+      await apiInstance.sendTransacEmail(sendSmtpEmail);
 
       return true;
     } catch (error: any) {
@@ -127,11 +107,15 @@ class EmailService {
     }
   }
 
-  static async registerUser(body: WelcomeBody, role: ROLES) {
+  static async registerUser(body: ConfirmWelcomeBody, role: ROLES) {
     const emailConfig: SendEmailConfig = {
       templatePath: `${EMAILPATHS.html}/confirm-email.html`,
       plainTextPath: `${EMAILPATHS.text}/confirm-email.txt`,
-      data: { ...body, isCustomer: ROLES.CUSTOMER === role, role },
+      data: {
+        ...body,
+        isCustomer: ROLES.CUSTOMER === role,
+        role: role.toLowerCase(),
+      },
       configData: {
         to: body.email,
         subject: "Confirm Your Email Address - Welcome to Freshness!",
@@ -142,15 +126,34 @@ class EmailService {
     return await EmailService.sendEmail(emailConfig);
   }
 
-  static async sendCustomerReg(body: WelcomeBody) {
+  static async sendCustomerReg(body: ConfirmWelcomeBody) {
     return await EmailService.registerUser(body, ROLES.CUSTOMER);
   }
 
-  static async sendMerchantReg(body: WelcomeBody) {
+  static async sendMerchantReg(body: ConfirmWelcomeBody) {
     return await EmailService.registerUser(body, ROLES.MERCHANT);
   }
 
   static async sendAdminCreate() {
+    return;
+  }
+
+  static async welcomeUser(
+    body: ConfirmWelcomeBody,
+    role: Exclude<ROLES, ROLES.ADMIN>
+  ) {
+    const emailConfig: SendEmailConfig = {
+      templatePath: `${EMAILPATHS.html}/welcome-${role.toLowerCase()}.html`,
+      plainTextPath: `${EMAILPATHS.text}/welcome-${role.toLowerCase()}.txt`,
+      data: { ...body, websiteUrl: body.callbackUrl },
+      configData: {
+        to: body.email,
+        subject: "Welcome to Freshness - Let's Get Started!",
+      },
+      replacer: replacePlaceholders,
+    };
+
+    return await EmailService.sendEmail(emailConfig);
     return;
   }
 }

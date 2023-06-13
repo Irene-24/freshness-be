@@ -1,6 +1,8 @@
 import EmailService from "@/services/Email.service";
+import TokenService from "@/services/Token.service";
 import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
+import { appendQueryParam } from "@/utils/miscHelpers";
 import { NextFunction, Request, Response } from "express";
 
 class CustomerController {
@@ -15,10 +17,16 @@ class CustomerController {
         password: req.body.password,
       });
 
+      const emailToken = await TokenService.generateEmailToken(user.id);
+
       await EmailService.sendCustomerReg({
         email: user.email,
         name: user.userName || user.email,
-        callbackUrl: req.body.callbackUrl,
+        callbackUrl: appendQueryParam(
+          req.body.callbackUrl,
+          "token",
+          emailToken
+        ),
       });
 
       return res.status(201).json({
