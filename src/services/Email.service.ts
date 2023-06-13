@@ -1,16 +1,17 @@
 import { promises as fs } from "fs";
+import * as path from "path";
 import * as Handlebars from "handlebars";
 import * as nodemailer from "nodemailer";
 import config from "@/src/config";
 import { AppError } from "@/utils/APIError";
 import SibApiV3Sdk from "@sendinblue/client";
+import { ROLES } from "@/utils/commonType";
 
 interface SendEmailConfig {
   templatePath: string;
   plainTextPath?: string;
   data: any;
   configData: {
-    from: string;
     to: string | string[];
     subject: string;
     text?: string;
@@ -18,11 +19,34 @@ interface SendEmailConfig {
   replacer?: (data: any, templateHtmlOrText: string) => string;
 }
 
+interface WelcomeBody {
+  name: string;
+  email: string;
+  callbackUrl: string;
+}
+
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 apiInstance.setApiKey(
   SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
   config.emailConfig.bravoKey as string
 );
+
+const EMAILPATHS = {
+  html: "@/src/email-templates/html",
+  text: "@/src/email-templates/text",
+};
+
+function replacePlaceholders(
+  replacements: Record<string, any>,
+  template: string
+) {
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    const regex = new RegExp(`{{${placeholder}}}`, "g");
+    template = template.replace(regex, value);
+  }
+
+  return template;
+}
 
 class EmailService {
   static async sendEmail({
@@ -33,7 +57,7 @@ class EmailService {
     replacer,
   }: SendEmailConfig) {
     try {
-      let templateHtml = await fs.readFile(templatePath, "utf8");
+      let templateHtml = await fs.readFile(path.resolve(templatePath), "utf8");
 
       if (replacer) {
         templateHtml = replacer(data, templateHtml);
@@ -52,7 +76,7 @@ class EmailService {
       };
 
       if (plainTextPath) {
-        mailBody.text = await fs.readFile(plainTextPath, "utf8");
+        mailBody.text = await fs.readFile(path.resolve(plainTextPath), "utf8");
 
         if (replacer) {
           mailBody.text = replacer(data, mailBody.text);
@@ -101,12 +125,27 @@ class EmailService {
     }
   }
 
-  static async sendCustomerReg() {
-    return;
+  static async registerUser(body: WelcomeBody, role: ROLES) {
+    const emailConfig: SendEmailConfig = {
+      templatePath: `${EMAILPATHS.html}/confirm-email.html`,
+      plainTextPath: `${EMAILPATHS.text}/confirm-email.txt`,
+      data: { ...body, isCustomer: ROLES.CUSTOMER === role, role },
+      configData: {
+        to: body.email,
+        subject: "Confirm Your Email Address - Welcome to Freshness!",
+      },
+      replacer: replacePlaceholders,
+    };
+
+    return await EmailService.sendEmail(emailConfig);
   }
 
-  static async sendMerchantReg() {
-    return;
+  static async sendCustomerReg(body: WelcomeBody) {
+    return await EmailService.registerUser(body, ROLES.CUSTOMER);
+  }
+
+  static async sendMerchantReg(body: WelcomeBody) {
+    return await EmailService.registerUser(body, ROLES.MERCHANT);
   }
 
   static async sendAdminCreate() {

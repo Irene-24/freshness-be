@@ -15,7 +15,11 @@ class CustomerController {
         password: req.body.password,
       });
 
-      //await EmailService.sendCustomerReg()
+      await EmailService.sendCustomerReg({
+        email: user.email,
+        name: user.userName || user.email,
+        callbackUrl: req.body.callbackUrl,
+      });
 
       return res.status(201).json({
         message: "Created customer",

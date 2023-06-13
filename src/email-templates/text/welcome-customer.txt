@@ -1,0 +1,9 @@
+Welcome to Freshness - Let's Get Started!
+
+Dear, {{name}}
+
+Welcome to Freshness! We're thrilled to have you on board. Now that you've confirmed your identity, it's
+time to
+embark on an exciting shopping journey.
+
+Copy and paste this url: https://example.com, into your browser to unsubscribe from any future promotional emails
