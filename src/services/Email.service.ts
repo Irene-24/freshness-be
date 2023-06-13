@@ -25,10 +25,15 @@ interface WelcomeBody {
   callbackUrl: string;
 }
 
+console.log("=================================");
+console.log({ SibApiV3Sdk, key: config.emailConfig.brevoKey });
+console.log("=================================");
+
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
 apiInstance.setApiKey(
   SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  config.emailConfig.bravoKey as string
+  config.emailConfig.brevoKey as string
 );
 
 const EMAILPATHS = {
