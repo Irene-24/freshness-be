@@ -47,15 +47,44 @@ class UserRepository extends BaseRespoitory {
     }
   }
 
-  update(body: any) {
+  async update(
+    id: string,
+    columns: string[],
+    values: (string | number | boolean)[]
+  ) {
+    try {
+      const setClause = columns
+        .map((column, index) => format("%I = %L", column, values[index]))
+        .join(", ");
+
+      const result = await this.query(
+        format(
+          `UPDATE %I
+    SET %s
+    WHERE id = %L
+    RETURNING *;`,
+          "users",
+          setClause,
+          id
+        )
+      );
+
+      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
+
+      return user;
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: `Unable to update user`,
+      });
+    }
+  }
+
+  async updatePassword(body: any) {
     return 5;
   }
 
-  updatePassword(body: any) {
-    return 5;
-  }
-
-  delete(id: string) {
+  async delete(id: string) {
     return 5;
   }
 

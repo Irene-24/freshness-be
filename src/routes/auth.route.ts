@@ -12,7 +12,7 @@ import {
   // validateReqParams,
   // validateReqQuery,
 } from "@/validators/validate";
-import { NextFunction, Request, Response, Router } from "express";
+import { /*NextFunction, Request, Response, */ Router } from "express";
 
 const authRoutes = (app: Router) => {
   const route = Router();
@@ -25,9 +25,7 @@ const authRoutes = (app: Router) => {
     AuthController.loginCustomerWithPassword
   );
 
-  route.get("/verify-email", (req, res, next) => {
-    console.log("email verify");
-  });
+  route.post("/verify-email", AuthController.confirmEmailToken);
 
   route.get("/refresh", AuthController.refreshToken);
 

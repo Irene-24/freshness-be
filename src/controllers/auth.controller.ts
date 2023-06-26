@@ -4,6 +4,7 @@ import Cookies from "cookies";
 import TokenService from "@/services/Token.service";
 import AuthService from "@/services/Auth.service";
 import config from "@/src/config";
+import UserService from "@/services/User.service";
 
 class AuthController {
   static async loginCustomerWithPassword(
@@ -84,14 +85,22 @@ class AuthController {
 
   //completeresetcustomerpwd
 
-  ////verify setup token
-
   static async confirmEmailToken(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
-    return;
+    try {
+      const userId = await TokenService.verifyEmailToken(req.body.token);
+
+      const user = await UserService.verifyUser(userId);
+
+      return res
+        .status(200)
+        .json({ message: `User with email ${user.email} has been verified` });
+    } catch (error: any) {
+      return next(error);
+    }
   }
 }
 

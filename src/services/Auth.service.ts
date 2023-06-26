@@ -63,9 +63,8 @@ class AuthService {
     return this.loginWithPassword(email, password, ROLES.MERCHANT);
   }
 
-  static async generateEmailToken(email: string) {
-    return email;
-  }
+  
+
 }
 
 export default AuthService;

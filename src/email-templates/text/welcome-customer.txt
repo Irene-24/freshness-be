@@ -6,9 +6,7 @@ Welcome to Freshness! We're thrilled to have you on board. Now that you've confi
 time to
 embark on an exciting shopping journey.
 
-Copy and paste this url: {{websiteUrl}}, into your browser to visit the portal and create your first
-product!
-
-
+Visit our website {{websiteUrl}} to start exploring our
+collection today. Happy shopping!
 
 Copy and paste this url: https://example.com, into your browser to unsubscribe from any future promotional emails

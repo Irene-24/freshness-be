@@ -4,6 +4,7 @@ import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { appendQueryParam } from "@/utils/miscHelpers";
 import { NextFunction, Request, Response } from "express";
+import config from "@/src/config";
 
 class CustomerController {
   static async createWithEmailAndPassword(
@@ -17,17 +18,19 @@ class CustomerController {
         password: req.body.password,
       });
 
-      const emailToken = await TokenService.generateEmailToken(user.id);
+      if (!config.isTest) {
+        const emailToken = await TokenService.generateEmailToken(user.id);
 
-      await EmailService.sendCustomerReg({
-        email: user.email,
-        name: user.userName || user.email,
-        callbackUrl: appendQueryParam(
-          req.body.callbackUrl,
-          "token",
-          emailToken
-        ),
-      });
+        await EmailService.sendCustomerReg({
+          email: user.email,
+          name: user.userName || user.email,
+          callbackUrl: appendQueryParam(
+            req.body.callbackUrl,
+            "token",
+            emailToken
+          ),
+        });
+      }
 
       return res.status(201).json({
         message: "Created customer",

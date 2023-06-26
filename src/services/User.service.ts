@@ -5,7 +5,12 @@ import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
 import { GithHubUser, UserEmailPwd } from "@/dto/User.dto";
-import { filterUserInfo, isCustomer, isMerchant } from "@/utils/user";
+import {
+  filterUserInfo,
+  isCustomer,
+  isMerchant,
+  UserKeysNoPwd,
+} from "@/utils/user";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
@@ -87,13 +92,13 @@ class UserService {
       const user = await UserRepo.findById(id);
 
       if (user.id) {
-        const removed = [];
+        const removed: UserKeysNoPwd[] = [];
 
         if (isCustomer(user.role) || isMerchant(user.role)) {
           removed.push("createdBy");
         }
 
-        return filterUserInfo(user, ["createdBy"]);
+        return filterUserInfo(user, removed);
       }
 
       throw new AppError({
@@ -137,6 +142,20 @@ class UserService {
       throw new AppError({
         body: error?.body ?? error,
         message: error?.message ?? "Error finding user by sso id",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
+  }
+
+  static async verifyUser(id: string) {
+    try {
+      const user = await UserRepo.update(id, ["is_verified"], [true]);
+
+      return filterUserInfo(user);
+    } catch (error: any) {
+      throw new AppError({
+        body: error?.body ?? error,
+        message: error?.message ?? "Error verifying user",
         statusCode: error?.statusCode ?? 500,
       });
     }

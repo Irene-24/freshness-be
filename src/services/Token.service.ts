@@ -139,10 +139,10 @@ class TokenService {
       const fullInfo = await TokenService.verifyRefreshToken(token, true);
 
       if (fullInfo.userId) {
-        return true;
+        return fullInfo.userId;
       }
 
-      return false;
+      throw new Error("Unable to verify token");
     } catch (error: any) {
       throw new AppError({
         message: error?.message || `Invalid email token`,

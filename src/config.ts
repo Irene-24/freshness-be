@@ -38,6 +38,7 @@ if (envFound.error) {
 
 export default {
   env: process.env.NODE_ENV,
+  isTest: process.env.NODE_ENV === "test",
   isDev: process.env.NODE_ENV === "development",
   isProd: process.env.NODE_ENV === "production",
   port: parseInt(process.env.PORT as string, 10),
