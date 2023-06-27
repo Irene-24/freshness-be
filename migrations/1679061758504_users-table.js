@@ -18,10 +18,10 @@ exports.up = async (pgm) => {
         role VARCHAR CHECK (role in ('CUSTOMER', 'MERCHANT','ADMIN')),
 
         -- When users are deleted set these to false, ie soft delete
-        isEnabled BOOLEAN NOT NULL DEFAULT TRUE,
+        is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
 
         -- For email sign up, to verify user
-        isVerified BOOLEAN NOT NULL DEFAULT FALSE,
+        is_verified BOOLEAN NOT NULL DEFAULT FALSE,
 
         -- To know which admin created another
         created_by uuid,

@@ -5,10 +5,10 @@ exports.up = async (pgm) => {
         CREATE TABLE IF NOT EXISTS user_tokens(
 
         user_id uuid NOT NULL UNIQUE,
-        refreshToken VARCHAR(255),
+        refresh_token VARCHAR(255),
 
         -- for things like verify email, or validate reset password, etc
-        verifyToken  VARCHAR(255),
+        verify_token  VARCHAR(255),
         
         
         CONSTRAINT fk_user_id
