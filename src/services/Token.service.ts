@@ -102,7 +102,6 @@ class TokenService {
         }
         return fullInfo;
       } else {
-        console.log("exp");
         throw new Error(`Invalid ${isEmailToken ? "email" : "refresh"} token`);
       }
     } catch (error: any) {
@@ -142,6 +141,7 @@ class TokenService {
       const fullInfo = await TokenService.verifyRefreshToken(token, true);
 
       if (fullInfo.userId) {
+        await TokenRepo.addOrUpdateVerifyToken(fullInfo.userId, "");
         return fullInfo.userId;
       }
 
