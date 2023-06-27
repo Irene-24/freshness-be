@@ -26,13 +26,13 @@ export const filterUserInfo = <T extends UserInfo>(
   ]) as Omit<T, "password">;
 };
 
-export const pickUserInfo = <T extends UserInfo>(
+export const pickUserInfo = <T extends UserInfo, K extends UserKeysNoPwd[]>(
   user: T,
-  fieldsToAdd: UserKeysNoPwd[]
-): Omit<T, "password"> => {
-  return filterUserInfo(pick(user, fieldsToAdd) as UserInfo) as Omit<
+  fieldsToAdd: K
+): Pick<T, K[number]> => {
+  return filterUserInfo(pick(user, fieldsToAdd) as UserInfo) as unknown as Pick<
     T,
-    "password"
+    K[number]
   >;
 };
 
@@ -46,4 +46,10 @@ export const isMerchant = (role: ROLES) => {
 
 export const isAdmin = (role: ROLES) => {
   return role === ROLES.ADMIN;
+};
+
+export const isValidRole = (role: ROLES) => {
+  return (
+    role === ROLES.ADMIN || role === ROLES.CUSTOMER || role === ROLES.MERCHANT
+  );
 };

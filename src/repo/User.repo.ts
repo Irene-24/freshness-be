@@ -4,7 +4,8 @@ import format from "pg-format";
 import { toCamelCase, toCamelCaseRows } from "@/utils/casing";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
-import { SSO_PROVIDER } from "@/utils/commonType";
+import { Pagination, SSO_PROVIDER } from "@/utils/commonType";
+import config from "@/src/config";
 
 class UserRepository extends BaseRespoitory {
   async create({ email, password, role }: UserEmailPwd) {
@@ -88,8 +89,53 @@ class UserRepository extends BaseRespoitory {
     return 5;
   }
 
-  async list() {
-    return;
+  async list({
+    lastValue,
+    condition,
+    order = "ASC",
+    pageSize = config.pageSize,
+  }: Pagination) {
+    try {
+      let query = format(
+        `SELECT *
+      FROM users`
+      );
+
+      if (condition) {
+        query += format(`WHERE %s`, condition);
+      }
+
+      if (lastValue) {
+        query += format(` AND id  < %L`, lastValue);
+      }
+
+      query += format(
+        ` ORDER BY created_at ${order}
+      LIMIT %L`,
+        pageSize
+      );
+
+      const result = await this.query(format(query));
+
+      const countQuery = `SELECT COUNT(*) FROM users${
+        condition ? ` WHERE ${condition}` : ""
+      };`;
+      const countResult = await this.query(countQuery);
+      const totalCount = Number(countResult?.rows[0]?.count);
+
+      if (result?.rows) {
+        const users = toCamelCaseRows<UserInfo>(result.rows);
+
+        return { users, totalCount };
+      }
+
+      return { users: [], totalCount };
+    } catch (error: any) {
+      throw new AppError({
+        body: error,
+        message: "Unable to retrieve users",
+      });
+    }
   }
 
   async findById(id: string) {

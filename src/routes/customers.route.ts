@@ -12,6 +12,12 @@ const customerRoutes = (app: Router) => {
 
   app.use("/customers", route);
 
+  route.get(
+    "/",
+    //add protection, maybe only admin/merchant?
+    CustomerController.getAllCustomers
+  );
+
   route.post(
     "/register-with-email-and-password",
     validateReqBody(RegisterUserSchema),

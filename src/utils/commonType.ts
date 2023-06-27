@@ -41,3 +41,10 @@ export type CamelCase<T> = {
 // }
 
 // type V = CamelCase<User>;
+
+export interface Pagination {
+  pageSize?: number;
+  lastValue?: string;
+  order?: "ASC" | "DESC";
+  condition?: string;
+}

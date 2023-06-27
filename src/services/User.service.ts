@@ -9,6 +9,8 @@ import {
   filterUserInfo,
   isCustomer,
   isMerchant,
+  isValidRole,
+  pickUserInfo,
   UserKeysNoPwd,
 } from "@/utils/user";
 import config from "@/src/config";
@@ -162,8 +164,45 @@ class UserService {
     }
   }
 
-  static getUsersByType(role: ROLES, limit = config.pageSize) {
-    return;
+  static async getUsersByType(
+    role: ROLES,
+    lastValue?: string,
+    limit = config.pageSize,
+    order?: "ASC" | "DESC"
+  ) {
+    try {
+      if (!isValidRole(role)) {
+        throw new Error("Invalid user role");
+      }
+
+      const data = await UserRepo.list({
+        lastValue,
+        condition: `role = '${role}'`,
+        pageSize: limit,
+        order,
+      });
+
+      return {
+        totalCount: data.totalCount,
+        users: data.users.map((user) =>
+          pickUserInfo(user, [
+            "email",
+            "firstName",
+            "lastName",
+            "role",
+            "createdAt",
+            "avatarUrl",
+            "id",
+          ])
+        ),
+      };
+    } catch (error: any) {
+      throw new AppError({
+        body: error?.body ?? error,
+        message: error?.message ?? `Error getting ${role.toLowerCase()}s`,
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
   }
 
   static async createUserByGithub({
