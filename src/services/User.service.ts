@@ -186,13 +186,13 @@ class UserService {
         totalCount: data.totalCount,
         users: data.users.map((user) =>
           pickUserInfo(user, [
+            "id",
             "email",
             "firstName",
             "lastName",
+            "avatarUrl",
             "role",
             "createdAt",
-            "avatarUrl",
-            "id",
           ])
         ),
       };
