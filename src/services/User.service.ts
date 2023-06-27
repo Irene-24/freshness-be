@@ -11,6 +11,7 @@ import {
   isMerchant,
   UserKeysNoPwd,
 } from "@/utils/user";
+import config from "@/src/config";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
@@ -159,6 +160,10 @@ class UserService {
         statusCode: error?.statusCode ?? 500,
       });
     }
+  }
+
+  static getUsersByType(role: ROLES, limit = config.pageSize) {
+    return;
   }
 
   static async createUserByGithub({

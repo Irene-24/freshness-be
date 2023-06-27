@@ -62,9 +62,6 @@ class AuthService {
   static async merchantPasswordLogin(email: string, password: string) {
     return this.loginWithPassword(email, password, ROLES.MERCHANT);
   }
-
-  
-
 }
 
 export default AuthService;

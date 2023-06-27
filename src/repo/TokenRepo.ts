@@ -18,7 +18,7 @@ class TokenRepository {
       const result = await this.query(
         format(
           `UPDATE user_tokens
-            SET refreshToken = %1$L
+            SET refresh_token = %1$L
             WHERE user_id =  %2$L RETURNING *;
         `,
           token,
@@ -39,7 +39,7 @@ class TokenRepository {
       const result = await this.query(
         format(
           `UPDATE user_tokens
-            SET verifyToken = %1$L
+            SET verify_token = %1$L
             WHERE user_id = %2$L RETURNING *;
         `,
           token,

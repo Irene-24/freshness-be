@@ -1,21 +1,23 @@
 exports.up = (pgm) => {
   pgm.sql(`
+    DROP TRIGGER IF EXISTS insert_user_token ON users;
 
-CREATE FUNCTION INSERT_USER_TOKEN_FUNCTION() RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO user_tokens (user_id) VALUES (NEW.id);
-    RETURN NEW;
-END;
-$$ LANGUAGE PLPGSQL;
+    CREATE FUNCTION INSERT_USER_TOKEN_FUNCTION() RETURNS TRIGGER AS $$
+    BEGIN
+      INSERT INTO user_tokens (user_id) VALUES (NEW.id);
+      RETURN NEW;
+    END;
+    $$ LANGUAGE PLPGSQL;
 
-
-CREATE TRIGGER INSERT_USER_TOKEN AFTER
-INSERT ON USERS
-FOR EACH ROW EXECUTE FUNCTION INSERT_USER_TOKEN_FUNCTION();
-
-        `);
+    CREATE TRIGGER insert_user_token
+    AFTER INSERT ON users
+    FOR EACH ROW EXECUTE FUNCTION INSERT_USER_TOKEN_FUNCTION();
+  `);
 };
 
 exports.down = (pgm) => {
-  pgm.sql(`DROP TRIGGER insert_user_token;`);
+  pgm.sql(`
+    DROP TRIGGER IF EXISTS insert_user_token ON users;
+    DROP FUNCTION IF EXISTS INSERT_USER_TOKEN_FUNCTION();
+  `);
 };

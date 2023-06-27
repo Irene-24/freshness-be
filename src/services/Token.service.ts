@@ -93,13 +93,16 @@ class TokenService {
       if (diff < dur) {
         const fullInfo = await TokenRepo.findByUserId(tokenPayload.id);
 
-        if (fullInfo.refreshToken !== refreshToken) {
-          throw new Error(
-            `Invalid ${isEmailToken ? "email" : "refresh"} token`
-          );
+        if (!isEmailToken && fullInfo.refreshToken !== refreshToken) {
+          throw new Error(`Invalid refresh token`);
+        }
+
+        if (isEmailToken && fullInfo.verifyToken !== refreshToken) {
+          throw new Error(`Invalid email token`);
         }
         return fullInfo;
       } else {
+        console.log("exp");
         throw new Error(`Invalid ${isEmailToken ? "email" : "refresh"} token`);
       }
     } catch (error: any) {
@@ -115,10 +118,10 @@ class TokenService {
 
   static async generateEmailToken(userId: string) {
     try {
-      const token = await this.encode(
+      const token = this.encode(
         JSON.stringify({
           id: userId,
-          duration: "20m",
+          duration: twentyMins,
           createdAt: new Date().toISOString(),
         })
       );
@@ -166,6 +169,7 @@ class TokenService {
     }
 
     const bytes = CryptoJS.AES.decrypt(value, jwtConfig.refreshSecret);
+
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 

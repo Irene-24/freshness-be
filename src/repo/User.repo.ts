@@ -88,6 +88,10 @@ class UserRepository extends BaseRespoitory {
     return 5;
   }
 
+  async list() {
+    return;
+  }
+
   async findById(id: string) {
     try {
       const result = await this.query(

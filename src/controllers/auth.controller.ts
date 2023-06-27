@@ -48,7 +48,9 @@ class AuthController {
 
   static async refreshToken(req: Request, res: Response, next: NextFunction) {
     try {
-      const validRefreshToken = await TokenService.verifyRefreshToken("");
+      const validRefreshToken = await TokenService.verifyRefreshToken(
+        decodeURIComponent(req.body.refreshToken)
+      );
 
       if (validRefreshToken?.userId) {
         const jwt = await TokenService.generateJWT(validRefreshToken.userId);
@@ -91,7 +93,9 @@ class AuthController {
     next: NextFunction
   ) {
     try {
-      const userId = await TokenService.verifyEmailToken(req.body.token);
+      const userId = await TokenService.verifyEmailToken(
+        decodeURIComponent(req.body.token)
+      );
 
       const user = await UserService.verifyUser(userId);
 
