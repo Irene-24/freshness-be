@@ -96,13 +96,10 @@ class UserRepository extends BaseRespoitory {
     pageSize = config.pageSize,
   }: Pagination) {
     try {
-      let query = format(
-        `SELECT *
-      FROM users`
-      );
+      let query = format(`SELECT * FROM users`);
 
       if (condition) {
-        query += format(`WHERE %s`, condition);
+        query += format(` WHERE %s`, condition);
       }
 
       if (lastValue) {
