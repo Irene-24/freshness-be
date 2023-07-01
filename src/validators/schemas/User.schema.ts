@@ -46,7 +46,16 @@ const UrlRoleSchema = z.object({
   }),
 });
 
+const UpdateUserSchema = z.object({
+  email: z.string().email("Not a valid email").optional(),
+  lastName: z.string().optional(),
+  firstName: z.string().optional(),
+  phoneNumber: z.string().email("Not a valid email").optional(),
+  userName: z.string().optional(),
+});
+
 export {
+  UpdateUserSchema,
   UserWithEmailPwdSchema,
   EmailPwdSchema,
   UrlRoleSchema,

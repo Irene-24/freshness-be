@@ -31,6 +31,10 @@ const authRoutes = (app: Router) => {
 
   route.get("/github-callback", GitHubController.authoriseUser);
 
+  //init reset
+
+  //confirm reset
+
   route.get(
     "/github",
     validateReqQuery(UrlRoleSchema),

@@ -1,10 +1,13 @@
 import UserRepo from "@/repo/User.repo";
-import { UserWithEmailPwdSchema } from "@/validators/schemas/User.schema";
+import {
+  UpdateUserBody,
+  UserWithEmailPwdSchema,
+} from "@/validators/schemas/User.schema";
 import { ROLES, SSO_PROVIDER } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
-import { GithHubUser, UserEmailPwd } from "@/dto/User.dto";
+import { AdminCreateBody, GithHubUser, UserEmailPwd } from "@/dto/User.dto";
 import {
   filterUserInfo,
   isCustomer,
@@ -56,8 +59,17 @@ class UserService {
     return filterUserInfo(merchant, ["createdBy"]);
   }
 
-  static async createAdmin() {
-    return 6;
+  static async createAdmin(body: AdminCreateBody) {
+    try {
+      const admin = await UserRepo.createAdmin(body);
+
+      return filterUserInfo(admin, ["isEnabled", "isVerified"]);
+    } catch (error: any) {
+      return genericAppError({
+        error,
+        defaultMsg: error?.message || "Unable to create admin",
+      });
+    }
   }
 
   static async getUserByEmail(email: string) {
@@ -229,6 +241,14 @@ class UserService {
         statusCode: error?.statusCode ?? 500,
       });
     }
+  }
+
+  static async updateUser(userId: string, body: UpdateUserBody) {
+    return;
+  }
+
+  static async disableUser(userId: string) {
+    return;
   }
 }
 

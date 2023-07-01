@@ -12,6 +12,7 @@ class AuthService {
 
       let filteredUser: Omit<typeof user, "password" | "createdBy"> = user;
 
+      //check that uesr is not disabled (i.e sot delete)
       if (!user.isEnabled) {
         throw new AppError({
           body: {
@@ -22,6 +23,7 @@ class AuthService {
         });
       }
 
+      //check that user is verified (in prod)
       if (!user.isVerified && !config.isDev) {
         throw new AppError({
           body: {
@@ -31,6 +33,8 @@ class AuthService {
           statusCode: 403,
         });
       }
+
+      //check that user role is correct
 
       if (user.role === role) {
         const isCorrectPwd = await comparePwd(

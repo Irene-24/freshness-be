@@ -1,10 +1,16 @@
 import BaseRespoitory from "@/repo/Base.repo";
-import { GithHubUser, UserEmailPwd, UserInfo } from "@/dto/User.dto";
+import {
+  AdminCreateBody,
+  AdminInfo,
+  GithHubUser,
+  UserEmailPwd,
+  UserInfo,
+} from "@/dto/User.dto";
 import format from "pg-format";
 import { toCamelCase, toCamelCaseRows } from "@/utils/casing";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
-import { Pagination, SSO_PROVIDER } from "@/utils/commonType";
+import { Pagination, SSO_PROVIDER, ROLES } from "@/utils/commonType";
 import config from "@/src/config";
 
 class UserRepository extends BaseRespoitory {
@@ -24,6 +30,47 @@ class UserRepository extends BaseRespoitory {
       return genericAppError({
         error,
         defaultMsg: error.message || `Unable to create new ${role || "user"}`,
+      });
+    }
+  }
+
+  async createAdmin({
+    email,
+    password,
+    firstName,
+    lastName,
+    phoneNumber,
+    userName = null,
+    createdBy = null,
+  }: AdminCreateBody) {
+    try {
+      const result = await this.query(
+        format(
+          "INSERT INTO users (email, password , first_name, last_name, phone_number, user_name, created_by, role, is_enabled, is_verified) VALUES %L RETURNING *;",
+          [
+            [
+              email,
+              password,
+              firstName,
+              lastName,
+              phoneNumber,
+              userName,
+              createdBy,
+              ROLES.ADMIN,
+              true,
+              true,
+            ],
+          ]
+        )
+      );
+
+      const admin = toCamelCase<AdminInfo>(result?.rows[0] ?? {});
+
+      return admin;
+    } catch (error: any) {
+      return genericAppError({
+        error,
+        defaultMsg: error.message || `Unable to create new admin`,
       });
     }
   }
@@ -70,7 +117,7 @@ class UserRepository extends BaseRespoitory {
         )
       );
 
-      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
+      const user = toCamelCase<UserInfo | AdminInfo>(result?.rows[0] ?? {});
 
       return user;
     } catch (error: any) {
@@ -103,7 +150,10 @@ class UserRepository extends BaseRespoitory {
       }
 
       if (lastValue) {
-        query += format(` AND id  < %L`, lastValue);
+        query += format(
+          ` AND id ${order === "DESC" ? "<" : ">"}  %L`,
+          lastValue
+        );
       }
 
       query += format(

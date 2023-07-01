@@ -29,6 +29,7 @@ class CustomerController {
             emailToken
           ),
         });
+
         await EmailService.sendCustomerReg({
           email: user.email,
           name: user.userName || user.email,
@@ -78,8 +79,13 @@ class CustomerController {
     }
   }
 
-  //disable customer
-  //update customer info
+  static async updateCustomerInfo() {
+    return;
+  }
+
+  static async disableCustomers() {
+    return;
+  }
 
   //get all customers
   static async getAllCustomers(

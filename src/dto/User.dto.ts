@@ -9,6 +9,16 @@ export interface UserEmailPwd {
 
 export type UserInfo = CamelCase<User>;
 
+export type AdminInfo = Omit<
+  CamelCase<User>,
+  "sso_provider" | "sso_provider_user_id" | "avatar_url"
+>;
+
+export type AdminCreateBody = Omit<
+  AdminInfo,
+  "id" | "role" | "isEnabled" | "isVerified" | "createdAt" | "updatedAt"
+>;
+
 export interface GithHubUserInfo {
   id: string | number;
   login: string; //username
