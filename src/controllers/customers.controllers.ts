@@ -22,13 +22,13 @@ class CustomerController {
       if (!config.isTest) {
         const emailToken = await TokenService.generateEmailToken(user.id);
 
-        console.log({
-          callbackUrl: appendQueryParam(
-            req.body.callbackUrl,
-            "token",
-            emailToken
-          ),
-        });
+        // console.log({
+        //   callbackUrl: appendQueryParam(
+        //     req.body.callbackUrl,
+        //     "token",
+        //     emailToken
+        //   ),
+        // });
 
         await EmailService.sendCustomerReg({
           email: user.email,

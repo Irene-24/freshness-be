@@ -5,7 +5,22 @@ import EmailService from "@/services/Email.service";
 
 class AdminController {
   static async createAdmin(req: Request, res: Response, next: NextFunction) {
-    return;
+    try {
+      const admin = await UserService.createAdmin(req.body);
+
+      return res.status(201).json({
+        message: "Created admin",
+        data: admin,
+      });
+    } catch (error: any) {
+      next(
+        new AppError({
+          body: error?.body ?? error,
+          statusCode: error?.statusCode ?? 400,
+          message: error.message ?? "Error creating admin",
+        })
+      );
+    }
   }
 
   static async updateAdminInfo(
@@ -28,3 +43,5 @@ class AdminController {
     return;
   }
 }
+
+export default AdminController;

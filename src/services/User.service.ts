@@ -7,7 +7,12 @@ import { ROLES, SSO_PROVIDER } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
-import { AdminCreateBody, GithHubUser, UserEmailPwd } from "@/dto/User.dto";
+import {
+  AdminCreateBody,
+  AdminInfo,
+  GithHubUser,
+  UserEmailPwd,
+} from "@/dto/User.dto";
 import {
   filterUserInfo,
   isCustomer,
@@ -63,7 +68,12 @@ class UserService {
     try {
       const admin = await UserRepo.createAdmin(body);
 
-      return filterUserInfo(admin, ["isEnabled", "isVerified"]);
+      return filterUserInfo(admin, [
+        "isEnabled",
+        "isVerified",
+        "ssoProvider",
+        "ssoProviderUserId",
+      ]);
     } catch (error: any) {
       return genericAppError({
         error,

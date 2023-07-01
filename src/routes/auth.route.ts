@@ -31,9 +31,9 @@ const authRoutes = (app: Router) => {
 
   route.get("/github-callback", GitHubController.authoriseUser);
 
-  //init reset
+  //init reset password
 
-  //confirm reset
+  //confirm reset password
 
   route.get(
     "/github",

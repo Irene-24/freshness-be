@@ -1,11 +1,11 @@
-import { AdminInfo, UserInfo } from "@/dto/User.dto";
+import { UserInfo } from "@/dto/User.dto";
 import { omit, pick } from "./miscHelpers";
 import { ROLES } from "./commonType";
 
 export type UserKeys = keyof UserInfo;
 export type UserKeysNoPwd = Exclude<UserKeys, "password">;
 
-export const passwordFilter = (user: UserInfo | AdminInfo) => {
+export const passwordFilter = (user: UserInfo) => {
   return omit(user, ["password"]);
 };
 
@@ -13,17 +13,17 @@ export const passwordFilter = (user: UserInfo | AdminInfo) => {
  *
  * @param user
  * @param otherFieldsToRemove
- * @returns A user object without the password field as well as the without the 'therFieldsToRemove ' properties
+ * @returns A user object without the password field as well as the without the 'otherFieldsToRemove' properties
  */
 
-export const filterUserInfo = <T extends UserInfo | AdminInfo>(
+export const filterUserInfo = <T extends UserInfo, K extends UserKeysNoPwd[]>(
   user: T,
-  otherFieldsToRemove?: UserKeysNoPwd[]
-): Omit<T, "password"> => {
+  otherFieldsToRemove?: K
+): Omit<T, K[number]> => {
   return omit(user as UserInfo, [
     "password",
     ...(otherFieldsToRemove?.length ? otherFieldsToRemove : []),
-  ]) as Omit<T, "password">;
+  ]) as Omit<T, K[number]>;
 };
 
 export const pickUserInfo = <T extends UserInfo, K extends UserKeysNoPwd[]>(

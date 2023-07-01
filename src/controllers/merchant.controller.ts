@@ -54,6 +54,18 @@ class MerchantController {
       );
     }
   }
+
+  static async updateMerchantInfo() {
+    return;
+  }
+
+  static async listAllMerchants() {
+    return;
+  }
+
+  static async disableMerchants() {
+    return;
+  }
 }
 
 export default MerchantController;
