@@ -22,7 +22,7 @@ services:
     - irene_network_prod
 
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     env_file:
       - .env
     volumes:

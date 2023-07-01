@@ -4,9 +4,10 @@ import { serializeError } from "serialize-error";
 import config from "@/src/config";
 import { ApiError, NotFoundError } from "@/src/utils/APIError";
 import { omit } from "@/src/utils/miscHelpers";
+import routes from "@/routes";
 
 export default ({ app }: { app: express.Application }) => {
-  //enable morgan
+  //TO DO enable logging (morgan?)
 
   app.get(["/", "/test", "/status"], async (req, res) => {
     res.json({ message: `Server [${config.env}] is online!` });
@@ -19,6 +20,7 @@ export default ({ app }: { app: express.Application }) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.use("/api/v1", routes());
   //add error routes
 
   app.use((req: Request, res: Response, next: NextFunction) =>
@@ -27,13 +29,12 @@ export default ({ app }: { app: express.Application }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.statusCode || 500);
     const error = omit(
       serializeError(err),
       err.omitStack ? ["stack", "omitStack"] : "omitStack"
     );
 
-    res.json({
+    res.status(err?.statusCode || 500).json({
       error,
     });
   });

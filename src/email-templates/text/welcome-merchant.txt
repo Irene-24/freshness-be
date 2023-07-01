@@ -1,0 +1,12 @@
+Welcome to Freshness - Let's Get Started!
+
+Dear, {{name}}
+
+Welcome to Freshness! We're thrilled to have you on board. Now that you've confirmed your identity, it's time to
+start selling your products on our platform.
+
+Copy and paste this url: {{websiteUrl}}, into your browser to visit the portal and create your first
+product!
+Regards,The Freshness Team
+
+Copy and paste this url: https://example.com, into your browser to unsubscribe from any future promotional emails

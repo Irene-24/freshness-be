@@ -40,6 +40,8 @@ yarn-error.log*
 /build
 /dist
 
+/example
+
 Dockerfile
 Dockerfile.dev
 Dockerfile.prod
@@ -56,3 +58,4 @@ docker*.yml
 node_modules
 
 sql
+notes.md

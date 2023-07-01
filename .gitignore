@@ -25,6 +25,7 @@ yarn-error.log*
 
 # local env files
 .env
+.env.test
 .env*.local
 .env.production
 .env.development
@@ -34,3 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 
 data
+notes.md
+
+example

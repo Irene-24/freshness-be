@@ -1,12 +1,24 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
+    "module": "commonjs",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
+      "@/mocks/*": ["src/__tests__/__mocks__/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/validators/*": ["src/validators/*"],
+
       "@/routes/*": ["src/routes/*"],
+      "@/routes": ["src/routes"],
+
       "@/loaders/*": ["src/loaders/*"],
-      "@/repos/*": ["src/repos/*"],
+      "@/loaders": ["src/loaders"],
+
+      "@/dto/*": ["src/dto/*"],
+      "@/test-utils/*": ["src/__tests__/test-utils/*"],
+
+      "@/repo/*": ["src/repo/*"],
       "@/services/*": ["src/services/*"],
       "@/controllers/*": ["src/controllers/*"],
       "@/src/*": ["src/*"]
