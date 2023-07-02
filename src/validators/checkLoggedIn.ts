@@ -2,7 +2,6 @@ import TokenService from "@/services/Token.service";
 import UserService from "@/services/User.service";
 import { AppError } from "@/utils/APIError";
 import { Request, Response, NextFunction } from "express";
-import { CustomReq } from "@/utils/commonType";
 
 export const checkLoggedIn = async (
   req: Request,
@@ -26,7 +25,7 @@ export const checkLoggedIn = async (
 
     const user = await UserService.getUserById(userId);
 
-    (req as CustomReq).user = user;
+    (req as any).user = user;
 
     return next();
   } catch (error: any) {

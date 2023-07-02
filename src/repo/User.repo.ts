@@ -117,7 +117,7 @@ class UserRepository extends BaseRespoitory {
         )
       );
 
-      const user = toCamelCase<UserInfo | AdminInfo>(result?.rows[0] ?? {});
+      const user = toCamelCase<UserInfo>(result?.rows[0] ?? {});
 
       return user;
     } catch (error: any) {

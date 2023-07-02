@@ -50,6 +50,8 @@ const UpdateUserSchema = z.object({
   email: z.string().email("Not a valid email").optional(),
   lastName: z.string().optional(),
   firstName: z.string().optional(),
+  //validate vis lipphonuber
+
   phoneNumber: z.string().optional(),
   userName: z.string().optional(),
 });
@@ -61,6 +63,7 @@ const CreateAdminSchema = UserWithEmailPwdSchema.omit({ role: true }).extend({
   firstName: z.string({
     required_error: "First name is required",
   }),
+  //validate vis lipphonuber
   phoneNumber: z.string({
     required_error: "Phone number  is required",
   }),

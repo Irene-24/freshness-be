@@ -28,19 +28,19 @@ class AdminController {
     res: Response,
     next: NextFunction
   ) {
-    return;
+    return res.json({ message: "coming soon" });
   }
 
   static async disableAdmin(req: Request, res: Response, next: NextFunction) {
-    return;
+    return res.json({ message: "coming soon" });
   }
 
   static async getAdminById(req: Request, res: Response, next: NextFunction) {
-    return;
+    return res.json({ message: "coming soon" });
   }
 
   static async getAllAdmins(req: Request, res: Response, next: NextFunction) {
-    return;
+    return res.json({ message: "coming soon" });
   }
 }
 

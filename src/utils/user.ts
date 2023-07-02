@@ -16,14 +16,16 @@ export const passwordFilter = (user: UserInfo) => {
  * @returns A user object without the password field as well as the without the 'otherFieldsToRemove' properties
  */
 
-export const filterUserInfo = <T extends UserInfo, K extends UserKeysNoPwd[]>(
+export const filterUserInfo = <T extends UserInfo, K extends keyof T>(
   user: T,
-  otherFieldsToRemove?: K
-): Omit<T, K[number]> => {
-  return omit(user as UserInfo, [
+  otherFieldsToRemove?: K[]
+): Omit<T, "password" & K> => {
+  const fieldsToRemove = [
     "password",
-    ...(otherFieldsToRemove?.length ? otherFieldsToRemove : []),
-  ]) as Omit<T, K[number]>;
+    ...(otherFieldsToRemove ?? []),
+  ] as (keyof T)[];
+
+  return omit(user, fieldsToRemove) as Omit<T, "password" & K>;
 };
 
 export const pickUserInfo = <T extends UserInfo, K extends UserKeysNoPwd[]>(

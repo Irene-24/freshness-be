@@ -7,12 +7,7 @@ import { ROLES, SSO_PROVIDER } from "@/utils/commonType";
 import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { hashPwd } from "@/utils/password";
-import {
-  AdminCreateBody,
-  AdminInfo,
-  GithHubUser,
-  UserEmailPwd,
-} from "@/dto/User.dto";
+import { AdminCreateBody, GithHubUser, UserEmailPwd } from "@/dto/User.dto";
 import {
   filterUserInfo,
   isCustomer,
