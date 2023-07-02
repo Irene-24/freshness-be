@@ -19,11 +19,7 @@ const adminRoutes = (app: Router) => {
 
   app.use("/admin", route);
 
-  route.get(
-    "/",
-    /*checkLoggedIn,*/ checkAdminRole,
-    AdminController.getAllAdmins
-  );
+  route.get("/", checkLoggedIn, checkAdminRole, AdminController.getAllAdmins);
 
   route.post(
     "/create",
