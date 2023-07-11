@@ -46,15 +46,17 @@ const UrlRoleSchema = z.object({
   }),
 });
 
-const UpdateUserSchema = z.object({
-  email: z.string().email("Not a valid email").optional(),
-  lastName: z.string().optional(),
-  firstName: z.string().optional(),
-  //validate vis lipphonuber
+const UpdateUserSchema = z
+  .object({
+    email: z.string().email("Not a valid email").optional(),
+    lastName: z.string().optional(),
+    firstName: z.string().optional(),
+    //validate vis lipphonuber
 
-  phoneNumber: z.string().optional(),
-  userName: z.string().optional(),
-});
+    phoneNumber: z.string().optional(),
+    userName: z.string().optional(),
+  })
+  .strip();
 
 const CreateAdminSchema = UserWithEmailPwdSchema.omit({ role: true }).extend({
   lastName: z.string({

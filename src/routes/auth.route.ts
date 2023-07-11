@@ -25,6 +25,18 @@ const authRoutes = (app: Router) => {
     AuthController.loginCustomerWithPassword
   );
 
+  route.post(
+    "/merchant-password-login",
+    validateReqBody(EmailPwdSchema),
+    AuthController.loginMerchantWithPassword
+  );
+
+  route.post(
+    "/admin-password-login",
+    validateReqBody(EmailPwdSchema),
+    AuthController.loginAdminWithPassword
+  );
+
   route.post("/verify-email", AuthController.confirmEmailToken);
 
   route.get("/refresh", AuthController.refreshToken);

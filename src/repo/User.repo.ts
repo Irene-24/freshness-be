@@ -12,6 +12,7 @@ import { AppError } from "@/utils/APIError";
 import { genericAppError } from "@/utils/errorHandler";
 import { Pagination, SSO_PROVIDER, ROLES } from "@/utils/commonType";
 import config from "@/src/config";
+import { camelToSnake } from "@/utils/miscHelpers";
 
 class UserRepository extends BaseRespoitory {
   async create({ email, password, role }: UserEmailPwd) {
@@ -101,8 +102,14 @@ class UserRepository extends BaseRespoitory {
     values: (string | number | boolean)[]
   ) {
     try {
+      if (columns.length * values.length <= 0) {
+        return await this.findById(id);
+      }
+
       const setClause = columns
-        .map((column, index) => format("%I = %L", column, values[index]))
+        .map((column, index) =>
+          format("%I = %L", camelToSnake(column), values[index])
+        )
         .join(", ");
 
       const result = await this.query(
@@ -215,6 +222,7 @@ class UserRepository extends BaseRespoitory {
       throw new AppError({
         body: error,
         message: `Unable find user with email ${email}`,
+        statusCode: 404,
       });
     }
   }

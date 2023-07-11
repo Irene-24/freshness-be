@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export type NullableType<T> = null | T;
 
 export const enum ROLES {
@@ -40,4 +42,8 @@ export interface Pagination {
   lastValue?: string;
   order?: "ASC" | "DESC";
   condition?: string;
+}
+
+export interface ReqWithUser extends Request {
+  user: { id: string; role: ROLES };
 }

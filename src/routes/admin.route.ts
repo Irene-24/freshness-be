@@ -33,7 +33,7 @@ const adminRoutes = (app: Router) => {
   route.get(
     "/:id",
     validateReqParams(IDSchema),
-    checkLoggedIn,
+    // checkLoggedIn,
     AdminController.getAdminById
   );
 
@@ -41,9 +41,8 @@ const adminRoutes = (app: Router) => {
     "/:id",
     validateReqParams(IDSchema),
     validateReqBody(UpdateUserSchema),
-    checkEmailNotExists,
-    checkLoggedIn,
-    checkAdminRole,
+    // checkLoggedIn,
+    // checkAdminRole,
     AdminController.updateAdminInfo
   );
 

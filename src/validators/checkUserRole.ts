@@ -1,11 +1,11 @@
 import { AppError } from "@/utils/APIError";
-import { ROLES } from "@/utils/commonType";
+import { ROLES, ReqWithUser } from "@/utils/commonType";
 import { Response, Request, NextFunction } from "express";
 
 const checkRole =
   (role: string) =>
   async (request: Request, res: Response, next: NextFunction) => {
-    const req = request as Request & { user: { id: string; role: ROLES } };
+    const req = request as ReqWithUser;
 
     if (!req.user?.id) {
       return next(

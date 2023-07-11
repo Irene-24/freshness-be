@@ -1,9 +1,9 @@
-Confirm Your Email Address - Welcome to Freshness!
+Confirm Your Email Address - Freshness!
 
 Dear, {{name}}
 
 Welcome to Freshness! We're excited to have you join our community
-of savvy {{role}} . Before you
+of savvy {{role}}s . Before you
 start enjoying all the benefits, we kindly ask you to confirm your email address.
 Copy and paste this url: {{callbackUrl}}, into your browser to confirm your email address
 

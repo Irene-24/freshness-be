@@ -47,6 +47,14 @@ const snakeToCamel = (str: string) => {
     );
 };
 
+const camelToSnake = (str: string) => {
+  if (!str.trim()) {
+    throw new Error("Empty string cannot be converted to snake Case");
+  }
+
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+};
+
 function appendQueryParam(
   url: string,
   paramName: string,
@@ -57,4 +65,4 @@ function appendQueryParam(
   return urlObject.toString();
 }
 
-export { omit, snakeToCamel, pick, appendQueryParam };
+export { omit, snakeToCamel, pick, appendQueryParam, camelToSnake };
