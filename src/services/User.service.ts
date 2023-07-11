@@ -1,5 +1,6 @@
 import UserRepo from "@/repo/User.repo";
 import {
+  CreateAdminSchema,
   UpdateUserBody,
   UserWithEmailPwdSchema,
 } from "@/validators/schemas/User.schema";
@@ -17,6 +18,7 @@ import {
   UserKeysNoPwd,
 } from "@/utils/user";
 import config from "@/src/config";
+import { userColsToRemove } from "@/utils/constants";
 
 class UserService {
   private static async registerWithEmailPwd(body: UserEmailPwd) {
@@ -47,7 +49,7 @@ class UserService {
       role: ROLES.CUSTOMER,
     });
 
-    return filterUserInfo(user, ["createdBy"]);
+    return filterUserInfo(user, userColsToRemove as any);
   }
 
   static async merchantCreateWithEmailPwd(body: Omit<UserEmailPwd, "role">) {
@@ -56,14 +58,20 @@ class UserService {
       role: ROLES.MERCHANT,
     });
 
-    return filterUserInfo(merchant, ["createdBy"]);
+    return filterUserInfo(merchant, userColsToRemove as any);
   }
 
   static async createAdmin(body: AdminCreateBody) {
     try {
-      const admin = await UserRepo.createAdmin(body);
+      await CreateAdminSchema.parseAsync(body);
+      const password = await hashPwd(body.password as string);
+      const admin = await UserRepo.createAdmin({ ...body, password });
 
-      return filterUserInfo(admin, ["isEnabled", "isVerified"]);
+      return filterUserInfo(admin, [
+        "isVerified",
+        "ssoProvider",
+        "ssoProviderUserId",
+      ]);
     } catch (error: any) {
       return genericAppError({
         error,
@@ -107,10 +115,15 @@ class UserService {
       const user = await UserRepo.findById(id);
 
       if (user.id) {
-        const removed: UserKeysNoPwd[] = [];
+        const removed: UserKeysNoPwd[] = ["isVerified"];
 
         if (isCustomer(user.role) || isMerchant(user.role)) {
-          removed.push("createdBy");
+          userColsToRemove.forEach((element: string) => {
+            removed.push(element as UserKeysNoPwd);
+          });
+        } else {
+          removed.push("ssoProvider");
+          removed.push("ssoProviderUserId");
         }
 
         return filterUserInfo(user, removed);
@@ -143,7 +156,7 @@ class UserService {
           removed.push("createdBy");
         }
 
-        return filterUserInfo(user, ["createdBy"]);
+        return filterUserInfo(user, ["createdBy", "isVerified"]);
       }
 
       throw new AppError({
@@ -244,7 +257,34 @@ class UserService {
   }
 
   static async updateUser(userId: string, body: UpdateUserBody) {
-    return;
+    try {
+      const columns = Object.keys(body).filter(
+        (x) => !!body[x as keyof UpdateUserBody]
+      );
+
+      const values = columns.map(
+        (col) => body[col as keyof UpdateUserBody] as string
+      );
+
+      const removed: UserKeysNoPwd[] = [];
+      const user = await UserRepo.update(userId, columns, values);
+
+      if (isCustomer(user.role) || isMerchant(user.role)) {
+        userColsToRemove.forEach((element: string) => {
+          removed.push(element as UserKeysNoPwd);
+        });
+      } else {
+        removed.push("ssoProvider");
+        removed.push("ssoProviderUserId");
+      }
+      return filterUserInfo(user, removed);
+    } catch (error: any) {
+      throw new AppError({
+        body: error?.body ?? error,
+        message: error?.message ?? "Error updating user details",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
   }
 
   static async disableUser(userId: string) {

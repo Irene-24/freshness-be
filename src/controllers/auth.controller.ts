@@ -7,6 +7,32 @@ import config from "@/src/config";
 import UserService from "@/services/User.service";
 
 class AuthController {
+  static async handleLoginResult(result: any, req: Request, res: Response) {
+    if (result?.isCorrectPwd) {
+      const jwt = await TokenService.generateJWT(result.user.id);
+      const refreshToken = await TokenService.generateRefreshToken(
+        result.user.id
+      );
+
+      const cookies = new Cookies(req, res, {
+        secure: config.isProd,
+      });
+
+      cookies.set("refreshToken", TokenService.encode(refreshToken), {
+        httpOnly: true,
+        maxAge: TokenService.getDur(),
+        path: "/",
+        sameSite: "lax",
+      });
+
+      return res.json({ jwt, id: result.user.id });
+    }
+
+    return res
+      .status(400)
+      .json({ error: { message: "Invalid password/email" } });
+  }
+
   static async loginCustomerWithPassword(
     req: Request,
     res: Response,
@@ -18,29 +44,41 @@ class AuthController {
         req.body.password
       );
 
-      if (result?.isCorrectPwd) {
-        const jwt = await TokenService.generateJWT(result.user.id);
-        const refreshToken = await TokenService.generateRefreshToken(
-          result.user.id
-        );
+      return await AuthController.handleLoginResult(result, req, res);
+    } catch (error: any) {
+      return next(error);
+    }
+  }
 
-        const cookies = new Cookies(req, res, {
-          secure: config.isProd,
-        });
+  static async loginAdminWithPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const result = await AuthService.adminPasswordLogin(
+        req.body.email,
+        req.body.password
+      );
 
-        cookies.set("refreshToken", TokenService.encode(refreshToken), {
-          httpOnly: true,
-          maxAge: TokenService.getDur(),
-          path: "/",
-          sameSite: "lax",
-        });
+      return await AuthController.handleLoginResult(result, req, res);
+    } catch (error: any) {
+      return next(error);
+    }
+  }
 
-        return res.json({ jwt, id: result.user.id });
-      }
+  static async loginMerchantWithPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const result = await AuthService.merchantPasswordLogin(
+        req.body.email,
+        req.body.password
+      );
 
-      return res
-        .status(400)
-        .json({ error: { message: "Invalid password/email" } });
+      return await AuthController.handleLoginResult(result, req, res);
     } catch (error: any) {
       return next(error);
     }

@@ -47,11 +47,22 @@ const snakeToCamel = (str: string) => {
     );
 };
 
-function appendQueryParam(url: string, paramName: string, paramValue: string): string {
+const camelToSnake = (str: string) => {
+  if (!str.trim()) {
+    throw new Error("Empty string cannot be converted to snake Case");
+  }
 
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+};
+
+function appendQueryParam(
+  url: string,
+  paramName: string,
+  paramValue: string
+): string {
   const urlObject = new URL(url);
   urlObject.searchParams.append(paramName, paramValue);
   return urlObject.toString();
 }
 
-export { omit, snakeToCamel, pick ,appendQueryParam};
+export { omit, snakeToCamel, pick, appendQueryParam, camelToSnake };

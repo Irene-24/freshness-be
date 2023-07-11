@@ -6,7 +6,12 @@ const validateReq =
   (schema: AnyZodObject, key: "body" | "query" | "params") =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req[key]);
+      const strippedParams = await schema.parseAsync(req[key]);
+
+      if (key === "body") {
+        req.body = strippedParams;
+      }
+
       return next();
     } catch (error: any) {
       next(

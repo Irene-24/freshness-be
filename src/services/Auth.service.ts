@@ -4,6 +4,7 @@ import { AppError } from "@/utils/APIError";
 import { comparePwd } from "@/utils/password";
 import { filterUserInfo, isCustomer, isMerchant } from "@/utils/user";
 import config from "@/src/config";
+import { userColsToRemove } from "@/utils/constants";
 
 class AuthService {
   static async loginWithPassword(email: string, password: string, role: ROLES) {
@@ -43,7 +44,13 @@ class AuthService {
         );
 
         if (isCustomer(user.role) || isMerchant(user.role)) {
-          filteredUser = filterUserInfo(user, ["createdBy"]);
+          filteredUser = filterUserInfo(user, userColsToRemove as any);
+        } else {
+          filteredUser = filterUserInfo(user, [
+            "isVerified",
+            "ssoProvider",
+            "ssoProviderUserId",
+          ]);
         }
         return { isCorrectPwd, user: filteredUser };
       }
@@ -65,6 +72,10 @@ class AuthService {
 
   static async merchantPasswordLogin(email: string, password: string) {
     return this.loginWithPassword(email, password, ROLES.MERCHANT);
+  }
+
+  static async adminPasswordLogin(email: string, password: string) {
+    return this.loginWithPassword(email, password, ROLES.ADMIN);
   }
 }
 

@@ -1,12 +1,12 @@
 import { AppError } from "@/utils/APIError";
-import { ROLES } from "@/utils/commonType";
-import { Response, NextFunction } from "express";
-
-import { CustomReq } from "@/utils/commonType";
+import { ROLES, ReqWithUser } from "@/utils/commonType";
+import { Response, Request, NextFunction } from "express";
 
 const checkRole =
   (role: string) =>
-  async (req: CustomReq, res: Response, next: NextFunction) => {
+  async (request: Request, res: Response, next: NextFunction) => {
+    const req = request as ReqWithUser;
+
     if (!req.user?.id) {
       return next(
         new AppError({
@@ -28,10 +28,8 @@ const checkRole =
     return next();
   };
 
-const checkAdminRole = () => checkRole(ROLES.ADMIN);
-
-const checkCustomerRole = () => checkRole(ROLES.CUSTOMER);
-
-const checkMerchantRole = () => checkRole(ROLES.MERCHANT);
+const checkAdminRole = checkRole(ROLES.ADMIN);
+const checkCustomerRole = checkRole(ROLES.CUSTOMER);
+const checkMerchantRole = checkRole(ROLES.MERCHANT);
 
 export { checkAdminRole, checkMerchantRole, checkCustomerRole, checkRole };

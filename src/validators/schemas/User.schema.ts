@@ -46,13 +46,33 @@ const UrlRoleSchema = z.object({
   }),
 });
 
-const UpdateUserSchema = z.object({
-  email: z.string().email("Not a valid email").optional(),
-  lastName: z.string().optional(),
-  firstName: z.string().optional(),
-  phoneNumber: z.string().email("Not a valid email").optional(),
+const UpdateUserSchema = z
+  .object({
+    email: z.string().email("Not a valid email").optional(),
+    lastName: z.string().optional(),
+    firstName: z.string().optional(),
+    //validate vis lipphonuber
+
+    phoneNumber: z.string().optional(),
+    userName: z.string().optional(),
+  })
+  .strip();
+
+const CreateAdminSchema = UserWithEmailPwdSchema.omit({ role: true }).extend({
+  lastName: z.string({
+    required_error: "Last name is required",
+  }),
+  firstName: z.string({
+    required_error: "First name is required",
+  }),
+  //validate vis lipphonuber
+  phoneNumber: z.string({
+    required_error: "Phone number  is required",
+  }),
   userName: z.string().optional(),
 });
+
+export type UpdateUserBody = z.infer<typeof UpdateUserSchema>;
 
 export {
   UpdateUserSchema,
@@ -60,4 +80,5 @@ export {
   EmailPwdSchema,
   UrlRoleSchema,
   RegisterUserSchema,
+  CreateAdminSchema,
 };

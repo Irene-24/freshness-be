@@ -1,5 +1,4 @@
 import { Request } from "express";
-import { UserInfo } from "@/dto/User.dto";
 
 export type NullableType<T> = null | T;
 
@@ -7,10 +6,6 @@ export const enum ROLES {
   ADMIN = "ADMIN",
   CUSTOMER = "CUSTOMER",
   MERCHANT = "MERCHANT",
-}
-
-export interface CustomReq extends Request {
-  user: Omit<UserInfo, "password">;
 }
 
 export interface GitHubState {
@@ -47,4 +42,8 @@ export interface Pagination {
   lastValue?: string;
   order?: "ASC" | "DESC";
   condition?: string;
+}
+
+export interface ReqWithUser extends Request {
+  user: { id: string; role: ROLES };
 }
