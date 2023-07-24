@@ -7,7 +7,10 @@ import { ROLES, ReqWithUser } from "@/utils/commonType";
 class AdminController {
   static async createAdmin(req: Request, res: Response, next: NextFunction) {
     try {
-      const admin = await UserService.createAdmin(req.body);
+      const admin = await UserService.createAdmin({
+        createdBy: (req as ReqWithUser).user.id,
+        ...req.body,
+      });
 
       return res.status(201).json({
         message: "Created admin",

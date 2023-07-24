@@ -6,8 +6,40 @@ import { ApiError, NotFoundError } from "@/src/utils/APIError";
 import { omit } from "@/src/utils/miscHelpers";
 import routes from "@/routes";
 
+const people = [
+  {
+    id: 1,
+    name: "Reinhard",
+    email: "omo@slideshare.net",
+  },
+  {
+    id: 24,
+    name: "Lucio",
+    email: "irene@is.gd",
+  },
+  {
+    id: 3,
+    name: "Gwyn",
+    email: "gramalhete20@symantec.com",
+  },
+  {
+    id: 4,
+    name: "Caro",
+    email: "csepey3@biglobe.ne.jp",
+  },
+  {
+    id: 5,
+    name: "Dodie",
+    email: "dkoppke4@odnoklassniki.ru",
+  },
+];
+
 export default ({ app }: { app: express.Application }) => {
   //TO DO enable logging (morgan?)
+
+  app.get("/omo", async (req, res) => {
+    res.json(people);
+  });
 
   app.get(["/", "/test", "/status"], async (req, res) => {
     res.json({ message: `Server [${config.env}] is online!` });
