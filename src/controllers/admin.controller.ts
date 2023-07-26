@@ -58,8 +58,29 @@ class AdminController {
     const req = request as ReqWithUser;
 
     //cannot disable self
-    // req.user.id !== req.params.id
-    return res.json({ message: "coming soon", user: req.user });
+    if (req.user.id === req.params.id) {
+      return res.status(400).json({ message: "Cannot disable self" });
+    }
+
+    const admin = await UserService.disableUser(req.params.id);
+
+    return res.json({ message: "Admin disabled", data: admin });
+  }
+
+  static async enableAdmin(
+    request: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const req = request as ReqWithUser;
+
+    if (req.user.id === req.params.id) {
+      return res.status(400).json({ message: "Cannot enable self" });
+    }
+
+    const admin = await UserService.enableUser(req.params.id);
+
+    return res.json({ message: "Admin enabled", data: admin });
   }
 
   static async getAdminById(req: Request, res: Response, next: NextFunction) {

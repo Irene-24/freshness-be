@@ -63,4 +63,8 @@ export default {
   emailConfig: {
     brevoKey: process.env.BREVO_KEY,
   },
+  s3: {
+    credentials: { region: process.env.AWS_REGION },
+    bucket: process.env.AWS_BUCKET,
+  },
 };

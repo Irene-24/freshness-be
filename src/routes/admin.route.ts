@@ -14,11 +14,6 @@ import { Router } from "express";
 const adminRoutes = (app: Router) => {
   const route = Router();
 
-  //later
-  //app.use("/admin",   checkLoggedIn,    checkAdminRole, route);
-
-  app.use("/admin", route);
-
   route.get("/", checkLoggedIn, checkAdminRole, AdminController.getAllAdmins);
 
   route.post(
@@ -53,6 +48,15 @@ const adminRoutes = (app: Router) => {
     checkLoggedIn,
     checkAdminRole,
     AdminController.disableAdmin
+  );
+
+  //enable
+  route.patch(
+    "/:id",
+    validateReqParams(IDSchema),
+    checkLoggedIn,
+    checkAdminRole,
+    AdminController.enableAdmin
   );
 };
 

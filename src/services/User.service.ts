@@ -288,7 +288,31 @@ class UserService {
   }
 
   static async disableUser(userId: string) {
-    return;
+    try {
+      const user = await UserRepo.delete(userId);
+
+      return filterUserInfo(user);
+    } catch (error: any) {
+      throw new AppError({
+        body: error?.body ?? error,
+        message: error?.message ?? "Error disabling user",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
+  }
+
+  static async enableUser(userId: string) {
+    try {
+      const user = await UserRepo.enableUser(userId);
+
+      return filterUserInfo(user);
+    } catch (error: any) {
+      throw new AppError({
+        body: error?.body ?? error,
+        message: error?.message ?? "Error enabling user",
+        statusCode: error?.statusCode ?? 500,
+      });
+    }
   }
 }
 

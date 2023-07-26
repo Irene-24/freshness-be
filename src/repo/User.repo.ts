@@ -140,7 +140,11 @@ class UserRepository extends BaseRespoitory {
   }
 
   async delete(id: string) {
-    return 5;
+    return await this.update(id, ["isEnabled"], [false]);
+  }
+
+  async enableUser(id: string) {
+    return await this.update(id, ["isEnabled"], [true]);
   }
 
   async list({
